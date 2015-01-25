@@ -1,0 +1,10 @@
+syntax: glob
+develop-eggs
+.DS_Store
+.idea
+.installed.cfg
+*.egg-info
+*.pyc
+*.egg
+qml/buildout
+qml/main.py
