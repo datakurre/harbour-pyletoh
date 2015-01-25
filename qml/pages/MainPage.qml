@@ -16,28 +16,60 @@ Page {
     id: mainView
     anchors.fill: parent
 
-    PullDownMenu {
-      MenuItem {
-        text: 'On'
-        onClicked: {
-          var dialog = pageStack.push(
-            'Sailfish.Silica.ColorPickerDialog', {'colors': rainbow}
-          );
-          dialog.accepted.connect(function() {
-            python.call('main.app.action_on',
-                        [dialog.color.r * 256 | 0,
-                         dialog.color.g * 256 | 0,
-                         dialog.color.b * 256 | 0],
+    Column {
+      id: column
+
+      width: page.width
+      spacing: Theme.paddingLarge
+      PageHeader {
+        title: "LeTOH"
+      }
+
+      Slider {
+        id: red
+        label: 'red'
+        width: parent.width
+        stepSize: 1
+        minimumValue: 0
+        maximumValue: 256
+        value: 0
+        onValueChanged: {
+            python.call('main.app.set_color',
+                        [red.value | 0, green.value | 0, blue.value | 0],
                         function(args) {
             });
-          });
         }
       }
-      MenuItem {
-        text: 'Off'
-        onClicked: {
-          python.call('main.app.action_off', [], function(args) {
-          });
+
+      Slider {
+        id: green
+        label: 'green'
+        width: parent.width
+        stepSize: 1
+        minimumValue: 0
+        maximumValue: 256
+        value: 0
+        onValueChanged: {
+            python.call('main.app.set_color',
+                        [red.value | 0, green.value | 0, blue.value | 0],
+                        function(args) {
+            });
+        }
+      }
+
+      Slider {
+        id: blue
+        label: 'blue'
+        width: parent.width
+        stepSize: 1
+        minimumValue: 0
+        maximumValue: 256
+        value: 0
+        onValueChanged: {
+            python.call('main.app.set_color',
+                        [red.value | 0, green.value | 0, blue.value | 0],
+                        function(args) {
+            });
         }
       }
     }

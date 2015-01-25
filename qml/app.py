@@ -24,7 +24,7 @@ I2C_STATE_PATH = '/sys/devices/platform/reg-userspace-consumer.0/state'
 I2C_FILE = lambda: open(I2C_PATH, 'wb')
 I2C_STATE_FILE = lambda: open(I2C_STATE_PATH, 'w')
 
-I2C_SLEEP = 0.1
+I2C_SLEEP = 0.001
 
 DRIVERS = {}
 
@@ -100,7 +100,7 @@ class LED(object):
         start = self.offset
         end = self.offset + self.value * self.multiplier
 
-        logger.info('{0:s}, {1:s}'.format(str(start), str(end)))
+        # logger.debug('{0:s}, {1:s}'.format(str(start), str(end)))
 
         yield start & 0xff
         yield (start >> 8) & 0xff
@@ -181,24 +181,18 @@ class App(dict):
         with I2C_STATE_FILE() as fp:
             fp.write('0')
 
-    def action_on(self, red, green, blue):
-        logger.info('action_on')
+    def set_color(self, red, green, blue):
+        # logger.info('set_color')
         for led in self.values():
             led(red, green, blue)
         tuple(map(operator.methodcaller('__call__'), DRIVERS.values()))
-
-    def action_off(self):
-        logger.info('action_off')
-        for led in self.values():
-            led(0, 0, 0)
-        tuple(map(operator.methodcaller('__call__'), DRIVERS.values()))
+        return True
 
 # Singleton app
 _app = App()
 
 # Method aliases
-action_on = _app.action_on
-action_off = _app.action_off
+set_color = _app.set_color
 cleanup = _app.__del__
 
 
