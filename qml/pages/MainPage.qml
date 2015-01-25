@@ -34,7 +34,7 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-            python.call('main.app.set_color',
+            python.call('main.letoh.set_color',
                         [red.value | 0, green.value | 0, blue.value | 0],
                         function(args) {
             });
@@ -50,7 +50,7 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-            python.call('main.app.set_color',
+            python.call('main.letoh.set_color',
                         [red.value | 0, green.value | 0, blue.value | 0],
                         function(args) {
             });
@@ -66,7 +66,7 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-            python.call('main.app.set_color',
+            python.call('main.letoh.set_color',
                         [red.value | 0, green.value | 0, blue.value | 0],
                         function(args) {
             });

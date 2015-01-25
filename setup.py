@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='harbour-myletoh',
+    name='harbour-pyletoh',
     version='1.0.0',
     author='Asko Soukka',
     author_email='asko.soukka@iki.fi',
@@ -13,7 +13,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'main.py=app:__main__'
+            'main.py=letoh:__main__'
         ]
     }
 )

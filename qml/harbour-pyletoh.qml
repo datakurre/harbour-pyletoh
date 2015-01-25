@@ -14,7 +14,7 @@ ApplicationWindow {
       importModule_sync('main');
     }
     Component.onDestruction: {
-     python.call('main.app.cleanup', [], function(args) {
+     python.call('main.letoh.cleanup', [], function(args) {
      });
     }
   }

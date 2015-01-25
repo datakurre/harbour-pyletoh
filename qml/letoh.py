@@ -120,10 +120,10 @@ class RGB(object):
         self.blue.value = min(max(blue, 0), 256)
 
 
-class App(dict):
+class LeTOH(dict):
     def __init__(self):
         logger.info('__init__: state --> enabled')
-        super(App, self).__init__({
+        super(LeTOH, self).__init__({
             'bottomleft': RGB(
                 LED(0x41, 1, 'red'),
                 LED(0x41, 0, 'green'),
@@ -189,11 +189,11 @@ class App(dict):
         return True
 
 # Singleton app
-_app = App()
+_letoh = LeTOH()
 
 # Method aliases
-set_color = _app.set_color
-cleanup = _app.__del__
+set_color = _letoh.set_color
+cleanup = _letoh.__del__
 
 
 # Dummy

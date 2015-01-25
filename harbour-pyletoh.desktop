@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
 X-Nemo-Application-Type=silica-qt5
-Name=LeTOH
+Name=PyLeTOH
 Icon=harbour-letoh
-Exec=sailfish-qml harbour-myletoh
+Exec=sailfish-qml harbour-pyletoh
