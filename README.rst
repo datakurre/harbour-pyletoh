@@ -8,3 +8,8 @@ to easily include and package 3rd party Python packages when required.
    $ python3 bootstrap
    $ qml/buildout
    $ sailfish-qml harbour-myletoh
+
+
+Experimental release:
+
+https://www.dropbox.com/s/72lhj9rny7evywj/harbour-pyletoh-1.0.0-1.armv7hl.rpm?dl=0
