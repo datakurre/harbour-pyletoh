@@ -4,13 +4,7 @@ import io.thp.pyotherside 1.0
 
 Page {
   id: page
-  allowedOrientations: Orientation.Portrait | Orientation.Landscape
-
-  property var rainbow : [
-      "#ff0080", "#ff0000", "#ff8000", "#ffff00", "#00ff00",
-      "#00ff80", "#00ffff", "#0000ff", "#8000ff", "#ff00ff",
-      "#000000", "#ffffff" // also black and white
-  ]
+  allowedOrientations: Orientation.Portrait
 
   SilicaFlickable {
     id: mainView
@@ -21,6 +15,7 @@ Page {
 
       width: page.width
       spacing: Theme.paddingLarge
+
       PageHeader {
         title: "LeTOH"
       }
@@ -34,10 +29,10 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-            python.call('main.letoh.set_color',
-                        [red.value | 0, green.value | 0, blue.value | 0],
-                        function(args) {
-            });
+          python.call('main.letoh.set_color',
+                      [red.value | 0, green.value | 0, blue.value | 0],
+                      function(args) {
+          });
         }
       }
 
@@ -50,10 +45,10 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-            python.call('main.letoh.set_color',
-                        [red.value | 0, green.value | 0, blue.value | 0],
-                        function(args) {
-            });
+          python.call('main.letoh.set_color',
+                      [red.value | 0, green.value | 0, blue.value | 0],
+                      function(args) {
+          });
         }
       }
 
@@ -66,10 +61,18 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-            python.call('main.letoh.set_color',
-                        [red.value | 0, green.value | 0, blue.value | 0],
-                        function(args) {
-            });
+          python.call('main.letoh.set_color',
+                      [red.value | 0, green.value | 0, blue.value | 0],
+                      function(args) {
+          });
+        }
+      }
+
+      ColorPicker {
+        onColorChanged: {
+          red.value = color.r * 256
+          green.value = color.g * 256
+          blue.value = color.b * 256
         }
       }
     }
