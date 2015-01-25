@@ -6,7 +6,7 @@ Name: harbour-pyletoh
 Version: 1.0.0
 Release: 1
 Source: %{name}-%{version}.tar.gz
-BuildArch: noarch
+BuildArch: armv7hl
 URL: https://github.com/datakurre/harbour-pyletoh
 License: GPLv3
 Group: System/GUI/Other
@@ -21,7 +21,9 @@ PyLeTOH controls Light emitting The Other Half
 %setup -q
 
 %build
-# Nothing to do
+
+python3 bootstrap
+python3 qml/buildout
 
 %install
 
