@@ -22,7 +22,7 @@ PyLeTOH controls Light emitting The Other Half
 
 %build
 
-python3 bootstrap
+python3 bootstrap.py
 python3 qml/buildout
 
 %install
