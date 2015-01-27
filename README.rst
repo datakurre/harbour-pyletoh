@@ -11,7 +11,7 @@ Building for development
 
    $ python3 bootstrap
    $ qml/buildout
-   $ sailfish-qml harbour-myletoh
+   $ sailfish-qml harbour-pyletoh
 
 
 Packaging a release from a tag
@@ -23,6 +23,3 @@ Packaging a release from a tag
    $ curl -L -o harbour-pyletoh-0.1.0.tar.gz https://github.com/datakurre/harbour-pyletoh/archive/0.1.0.tar.gz
    $ tar xzvf harbour-pyletoh-0.1.0.tar.gz
    $ rpmbuild -bb harbour-pyletoh-0.1.0/rpm/harbour-pyletoh.spec
-
-Release is build for arch armv7hl, because this may later contain
-compiled arch dependent Python C extensions.
