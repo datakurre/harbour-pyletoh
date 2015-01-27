@@ -26,6 +26,7 @@ PyLeTOH controls Light emitting The Other Half
 pyvenv build-env
 build-env/bin/pip install requires/dist/setuptools-12.0.5.tar.gz
 build-env/bin/pip install requires/dist/zc.buildout-2.3.1.tar.gz
+build-env/bin/pip install requires/dist/zc.recipe.egg-2.0.1.tar.gz
 build-env/bin/buildout -o
 
 %install
