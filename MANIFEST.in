@@ -1,0 +1,3 @@
+recursive-include qml *
+include *.py *.txt *.rst
+global-exclude *.pyc
