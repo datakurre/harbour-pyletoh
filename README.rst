@@ -1,7 +1,11 @@
-Python letoh-app -experiment
+Python LeTOH-app experiment
 
 This project uses a weird buildout based build approach to make it possible
 to easily include and package 3rd party Python packages when required.
+
+
+Building for development
+------------------------
 
 .. code:: bash
 
@@ -10,6 +14,15 @@ to easily include and package 3rd party Python packages when required.
    $ sailfish-qml harbour-myletoh
 
 
-Experimental release:
+Packaging a release from a tag
+------------------------------
 
-https://www.dropbox.com/s/72lhj9rny7evywj/harbour-pyletoh-1.0.0-1.armv7hl.rpm?dl=0
+.. code:: bash
+
+   $ cd ~/rpmbuild/SOURCES
+   $ curl -L -o harbour-pyletoh-0.1.0.tar.gz https://github.com/datakurre/harbour-pyletoh/archive/0.1.0.tar.gz
+   $ tar xzvf harbour-pyletoh-0.1.0.tar.gz
+   $ rpmbuild -bb harbour-pyletoh-0.1.0/rpm/harbour-pyletoh.spec
+
+Release is build for arch armv7hl, because this may later contain
+compiled arch dependent Python C extensions.
