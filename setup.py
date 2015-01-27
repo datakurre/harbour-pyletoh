@@ -2,14 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='harbour-pyletoh',
-    version='0.1.17',
+    version='0.1.18',
     author='Asko Soukka',
     author_email='asko.soukka@iki.fi',
     license='GPL',
     packages=find_packages('qml', exclude=['ez_setup']),
     package_dir={'': 'qml'},
     install_requires=[
-        'setuptools',
     ],
     entry_points={
         'console_scripts': [
