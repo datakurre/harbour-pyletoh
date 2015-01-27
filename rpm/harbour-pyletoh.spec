@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 0.1.5
+Version: 0.1.6
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -23,6 +23,7 @@ PyLeTOH controls Light emitting The Other Half
 
 %build
 
+pip3 install requires/dist/setuptools-12.0.5.tar.gz
 pip3 install requires/dist/zc.buildout-2.3.1.tar.gz
 buildout -o
 
