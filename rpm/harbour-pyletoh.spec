@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 0.1.14
+Version: 0.1.15
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -13,12 +13,15 @@ Group: System/GUI/Other
 Requires: pyotherside-qml-plugin-python3-qt5 >= 1.3.0
 Requires: sailfishsilica-qt5
 Requires: libsailfishapp-launcher
+BuildRequires: python
 BuildRequires: python3-base
 
 %description
 PyLeTOH controls Light emitting The Other Half
 
 %changelog
+* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.15-1
+- No changes
 * Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.14-1
 - No changes
 * Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.13-1
@@ -33,7 +36,7 @@ PyLeTOH controls Light emitting The Other Half
 
 %build
 
-pyvenv bootstrap
+virtualenv bootstrap
 bootstrap/bin/pip install requires/dist/setuptools-12.0.5.tar.gz --upgrade
 bootstrap/bin/pip install requires/dist/zc.buildout-2.3.1.tar.gz
 bootstrap/bin/buildout bootstrap
