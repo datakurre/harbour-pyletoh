@@ -34,7 +34,7 @@ bootstrap/bin/pip install requires/dist/setuptools-12.0.5.tar.gz --upgrade
 bootstrap/bin/pip install requires/dist/zc.buildout-2.3.1.tar.gz
 bootstrap/bin/buildout bootstrap
 python3 qml/buildout buildout:install-from-cache=true
-rm qml/buildout
+rm -rf qml/buildout lib/zc.recipe*
 cat qml/main.py
 
 %install
