@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 0.1.11
+Version: 0.1.12
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -19,6 +19,8 @@ BuildRequires: python3-base
 PyLeTOH controls Light emitting The Other Half
 
 %changelog
+* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.12-1
+- No changes
 * Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.11-1
 - First release
 
@@ -28,9 +30,11 @@ PyLeTOH controls Light emitting The Other Half
 %build
 
 pyvenv bootstrap
-bootstrap/bin/pip install requires/dist/setuptools-12.0.5.tar.gz
+bootstrap/bin/pip install requires/dist/setuptools-12.0.5.tar.gz --upgrade
 bootstrap/bin/pip install requires/dist/zc.buildout-2.3.1.tar.gz
 bootstrap/bin/buildout bootstrap
+cat bootstrap/bin/buildout  # debug
+cat qml/buildout  # debug
 python3 qml/buildout buildout:install-from-cache=true
 rm qml/buildout
 
