@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 0.1.16
+Version: 0.1.17
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -13,23 +13,14 @@ Group: System/GUI/Other
 Requires: pyotherside-qml-plugin-python3-qt5 >= 1.3.0
 Requires: sailfishsilica-qt5
 Requires: libsailfishapp-launcher
-BuildRequires: python
 BuildRequires: python3-base
 
 %description
 PyLeTOH controls Light emitting The Other Half
 
 %changelog
-* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.16-1
-- No changes
-* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.15-1
-- No changes
-* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.14-1
-- No changes
-* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.13-1
-- No changes
-* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.12-1
-- No changes
+* Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.17-1
+- Fix build
 * Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.11-1
 - First release
 
@@ -43,9 +34,8 @@ bootstrap/bin/pip install requires/dist/setuptools-12.0.4.tar.gz --upgrade
 bootstrap/bin/pip install requires/dist/zc.buildout-2.3.0.tar.gz
 bootstrap/bin/buildout bootstrap
 python3 qml/buildout buildout:install-from-cache=true versions:setuptools=12.0.5 versions:zc.buildout=2.3.1
-cat qml/buildout  # debug
-cat qml/main.py  # debug
 rm qml/buildout
+cat qml/main.py
 
 %install
 
