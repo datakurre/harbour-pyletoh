@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 1.0.0
+Version: 0.1.0
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: armv7hl
