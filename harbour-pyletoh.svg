@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="86"
+   height="86"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="harbour-pyletoh.svg"
+   inkscape:export-filename="/Users/atsoukka/Code/harbour-pyletoh/harbour-pyletoh.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3789-6">
+      <stop
+         id="stop3812"
+         offset="0"
+         style="stop-color:#ffff04;stop-opacity:1;" />
+      <stop
+         style="stop-color:#ffff00;stop-opacity:1;"
+         offset="0.25"
+         id="stop3818" />
+      <stop
+         style="stop-color:#00ff00;stop-opacity:1;"
+         offset="0.5"
+         id="stop3814" />
+      <stop
+         id="stop3816"
+         offset="0.75"
+         style="stop-color:#ff0000;stop-opacity:1;" />
+      <stop
+         style="stop-color:#a00000;stop-opacity:1;"
+         offset="1"
+         id="stop3793-4" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="53.897424"
+     inkscape:cy="53.471796"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="true"
+     inkscape:window-width="1440"
+     inkscape:window-height="851"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:snap-bbox="true"
+     inkscape:snap-global="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Ebene"
+     style="display:inline"
+     transform="translate(0,-4)">
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#4ac6af;fill-opacity:1"
+       id="path11-4"
+       d="M 84.27638,89.7 C 85.06228,89.7 85.7,89.063277 85.7,88.276383 l 0,-82.552766 C 85.7,4.937724 85.06228,4.3 84.27638,4.3 l -41.276881,0 C 19.416713,4.3 0.3,23.417715 0.3,46.999499 l 0,41.276884 C 0.3,89.062276 0.996791,89.7 1.782684,89.7 l 82.493696,0 z" />
+    <path
+       sodipodi:type="star"
+       style="fill:#ffdd55"
+       id="path3767"
+       sodipodi:sides="5"
+       sodipodi:cx="-40"
+       sodipodi:cy="36"
+       sodipodi:r1="28.284271"
+       sodipodi:r2="14.142136"
+       sodipodi:arg1="0.78539816"
+       sodipodi:arg2="1.4137167"
+       inkscape:flatsided="false"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="M -20,56 -37.787683,49.968022 -52.84079,61.20147 -52.600735,42.420395 -67.936045,31.575365 -50,26 -44.424635,8.0639551 -33.579605,23.399265 -14.79853,23.159209 -26.031978,38.212318 z"
+       transform="matrix(1.034707,0,0,1.034707,85.407129,11.674413)"
+       inkscape:transform-center-x="1.4147431"
+       inkscape:transform-center-y="-1.4147401" />
+  </g>
+</svg>

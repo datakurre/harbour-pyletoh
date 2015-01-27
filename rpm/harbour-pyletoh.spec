@@ -36,12 +36,12 @@ TARGET=%{buildroot}/%{_datadir}/applications
 mkdir -p $TARGET
 cp -rpv %{name}.desktop $TARGET/
 
-#TARGET=%{buildroot}/%{_datadir}/icons/hicolor/86x86/apps/
-#mkdir -p $TARGET
-#cp -rpv %{name}.png $TARGET/
+TARGET=%{buildroot}/%{_datadir}/icons/hicolor/86x86/apps/
+mkdir -p $TARGET
+cp -rpv %{name}.png $TARGET/
 
 %files
 %defattr(-,root,root,-)
 %{_datadir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-#%{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/icons/hicolor/*/apps/%{name}.png
