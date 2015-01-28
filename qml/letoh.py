@@ -21,24 +21,42 @@ I2C_SLAVE = 0x0703
 I2C_PATH = '/dev/i2c-1'
 I2C_STATE_PATH = '/sys/devices/platform/reg-userspace-consumer.0/state'
 
-I2C_FILE = lambda: open(I2C_PATH, 'wb')
-I2C_STATE_FILE = lambda: open(I2C_STATE_PATH, 'w')
+I2C_FILE = lambda mode='wb': open(I2C_PATH, mode)
+I2C_STATE_FILE = lambda mode='w': open(I2C_STATE_PATH, mode)
 
 I2C_SLEEP = 0.001
 
-DRIVERS = {}
+DRIVER_RIGHT = 0x40
+DRIVER_LEFT = 0x41
+
+
+def turn_letoh_on():
+    with I2C_STATE_FILE('r') as fp:
+        state = fp.read().strip()
+    if state != 'enabled':
+        logger.info('LeTOH on')
+        with I2C_STATE_FILE() as fp:
+            fp.write('1')
+            fp.flush()
+        time.sleep(I2C_SLEEP)
+
+
+def turn_letoh_off():
+    with I2C_STATE_FILE('r') as fp:
+        state = fp.read().strip()
+    if state != 'disabled':
+        logger.info('LeTOH off')
+        with I2C_STATE_FILE() as fp:
+            fp.write('0')
+            fp.flush()
+        time.sleep(I2C_SLEEP)
 
 
 class Driver(list):
     def __init__(self, address):
         self.address = address
         super(Driver, self).__init__()
-
-        with I2C_STATE_FILE() as fp:
-            fp.write('1')
-            fp.flush()
-            time.sleep(I2C_SLEEP)
-
+        turn_letoh_on()
         with I2C_FILE() as fp:
             fcntl.ioctl(fp, I2C_SLAVE, self.address)
 
@@ -63,12 +81,7 @@ class Driver(list):
     def __call__(self):
         leds = sorted(self, key=operator.attrgetter('pin'))
         data = [0x06] + functools.reduce(operator.add, map(list, leds))
-
-        with I2C_STATE_FILE() as fp:
-            fp.write('1')
-            fp.flush()
-            time.sleep(I2C_SLEEP)
-
+        turn_letoh_on()
         with I2C_FILE() as fp:
             fcntl.ioctl(fp, I2C_SLAVE, self.address)
             fp.write(bytearray(data))
@@ -77,7 +90,7 @@ class Driver(list):
 
 
 class LED(object):
-    def __init__(self, address, pin, color, value=100):
+    def __init__(self, driver, pin, color, value=100):
         self.pin = pin
         self.offset = {
             'red': 2047,
@@ -90,11 +103,8 @@ class LED(object):
             'blue': 8
         }[color]
         self.value = value
-        if address in DRIVERS:
-            self.driver = DRIVERS[address]
-        else:
-            self.driver = DRIVERS[address] = Driver(address)
-        self.driver.append(self)
+        self.driver = driver
+        driver.append(self)
 
     def __iter__(self):
         start = self.offset
@@ -122,70 +132,72 @@ class RGB(object):
 
 class LeTOH(dict):
     def __init__(self):
-        logger.info('__init__: state --> enabled')
+        left = Driver(DRIVER_LEFT)
+        right = Driver(DRIVER_RIGHT)
         super(LeTOH, self).__init__({
             'bottomleft': RGB(
-                LED(0x41, 1, 'red'),
-                LED(0x41, 0, 'green'),
-                LED(0x41, 2, 'blue')
+                LED(left, 1, 'red'),
+                LED(left, 0, 'green'),
+                LED(left, 2, 'blue')
             ),
             'lowerleft': RGB(
-                LED(0x41, 4, 'red'),
-                LED(0x41, 3, 'green'),
-                LED(0x41, 5, 'blue')
+                LED(left, 4, 'red'),
+                LED(left, 3, 'green'),
+                LED(left, 5, 'blue')
             ),
             'middleleft': RGB(
-                LED(0x41, 7, 'red'),
-                LED(0x41, 6, 'green'),
-                LED(0x41, 8, 'blue')
+                LED(left, 7, 'red'),
+                LED(left, 6, 'green'),
+                LED(left, 8, 'blue')
             ),
             'upperleft': RGB(
-                LED(0x41, 10, 'red'),
-                LED(0x41, 9, 'green'),
-                LED(0x41, 11, 'blue')
+                LED(left, 10, 'red'),
+                LED(left, 9, 'green'),
+                LED(left, 11, 'blue')
             ),
             'topleft': RGB(
-                LED(0x41, 13, 'red'),
-                LED(0x41, 12, 'green'),
-                LED(0x41, 14, 'blue')
+                LED(left, 13, 'red'),
+                LED(left, 12, 'green'),
+                LED(left, 14, 'blue')
             ),
             'topight': RGB(
-                LED(0x40, 1, 'red'),
-                LED(0x40, 0, 'green'),
-                LED(0x40, 2, 'blue')
+                LED(right, 1, 'red'),
+                LED(right, 0, 'green'),
+                LED(right, 2, 'blue')
             ),
             'upperright': RGB(
-                LED(0x40, 4, 'red'),
-                LED(0x40, 3, 'green'),
-                LED(0x40, 5, 'blue')
+                LED(right, 4, 'red'),
+                LED(right, 3, 'green'),
+                LED(right, 5, 'blue')
             ),
             'middleright': RGB(
-                LED(0x40, 7, 'red'),
-                LED(0x40, 6, 'green'),
-                LED(0x40, 8, 'blue')
+                LED(right, 7, 'red'),
+                LED(right, 6, 'green'),
+                LED(right, 8, 'blue')
             ),
             'lowerright': RGB(
-                LED(0x40, 10, 'red'),
-                LED(0x40, 9, 'green'),
-                LED(0x40, 11, 'blue')
+                LED(right, 10, 'red'),
+                LED(right, 9, 'green'),
+                LED(right, 11, 'blue')
             ),
             'bottomright': RGB(
-                LED(0x40, 13, 'red'),
-                LED(0x40, 12, 'green'),
-                LED(0x40, 14, 'blue')
+                LED(right, 13, 'red'),
+                LED(right, 12, 'green'),
+                LED(right, 14, 'blue')
             ),
         })
+        self.drivers = {
+            'left': left,
+            'right': right
+        }
 
     def __del__(self):
-        logger.info('__del__: state --> disabled')
-        with I2C_STATE_FILE() as fp:
-            fp.write('0')
+        turn_letoh_off()
 
     def set_color(self, red, green, blue):
-        # logger.info('set_color')
         for led in self.values():
             led(red, green, blue)
-        tuple(map(operator.methodcaller('__call__'), DRIVERS.values()))
+        tuple(map(operator.methodcaller('__call__'), self.drivers.values()))
         return True
 
 # Singleton app
