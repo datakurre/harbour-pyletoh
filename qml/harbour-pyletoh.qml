@@ -49,7 +49,6 @@ ApplicationWindow {
          function(args) {
            // callback
        });
-
     }
   }
   DBusInterface {
@@ -62,6 +61,6 @@ ApplicationWindow {
   Component.onCompleted: {
     dbus.call(
         'AddMatch',
-         "interface='org.freedesktop.Notifications',member='Notify',type='method_call',eavesdrop='true'");
+        "interface='org.freedesktop.Notifications',member='Notify',type='method_call',eavesdrop='true'");
   }
 }
