@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 0.2.0
+Version: 0.2.1
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -20,6 +20,9 @@ BuildRequires: python3-base
 PyLeTOH controls Light emitting The Other Half
 
 %changelog
+* Thu Jan 29 2015 Asko Soukka <asko.soukka@iki.fi> - 0.2.1-1
+- Add pulley menu for turning LeTOH on / off
+- Fix issue where cover state was not sync with LeTOH state
 * Thu Jan 29 2015 Asko Soukka <asko.soukka@iki.fi> - 0.2.0-1
 - Add a cover action (turn leds on / off)
 - Turn leds on by notifications
