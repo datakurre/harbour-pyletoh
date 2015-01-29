@@ -11,12 +11,18 @@ ApplicationWindow {
   id: app
   cover: Qt.resolvedUrl('covers/CoverPage.qml')
   initialPage: Component { MainPage { } }
+
+  property bool state: false
+
   Python {
     id: python
     Component.onCompleted: {
       addImportPath(Qt.resolvedUrl('.').substr('file://'.length));
       importModule_sync('app');  // set sys.path to include packaged libs
       importModule_sync('letoh');
+      setHandler('set_state', function(state) {
+         app.state = state;
+      });
     }
     Component.onDestruction: {
       python.call('letoh.turn_off');

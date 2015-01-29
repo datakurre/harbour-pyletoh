@@ -70,6 +70,22 @@ Page {
         }
       }
     }
+    PullDownMenu {
+      MenuItem {
+        enabled: !app.state
+        text: 'On'
+        onClicked: {
+          python.call('letoh.turn_on');
+        }
+      }
+      MenuItem {
+        enabled: app.state
+        text: 'Off'
+        onClicked: {
+          python.call('letoh.turn_off');
+        }
+      }
+    }
   }
 }
 
