@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='harbour-pyletoh',
-    version='0.1.18',
+    version='0.2.0',
     author='Asko Soukka',
     author_email='asko.soukka@iki.fi',
     license='GPL',
