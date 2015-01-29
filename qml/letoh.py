@@ -5,13 +5,15 @@ try:
 except ImportError:
     pass
 
-import os
 import time
-import operator
-import functools
-import pyotherside
 import logging
 import fcntl
+
+from collections import deque
+from operator import add
+from operator import attrgetter
+from operator import methodcaller
+from functools import reduce
 
 logger = logging.getLogger('harbour-myletoh')
 logging.basicConfig(level=logging.DEBUG)
@@ -30,35 +32,21 @@ DRIVER_RIGHT = 0x40
 DRIVER_LEFT = 0x41
 
 
-def turn_letoh_on():
+def enable(drivers=None):
     with I2C_STATE_FILE('r') as fp:
         state = fp.read().strip()
-    if state != 'enabled':
-        logger.info('LeTOH on')
-        with I2C_STATE_FILE() as fp:
-            fp.write('1')
-            fp.flush()
-        time.sleep(I2C_SLEEP)
+    if state == 'enabled':
+        return
 
+    logger.info('LeTOH on')
+    with I2C_STATE_FILE() as fp:
+        fp.write('1')
+        fp.flush()
+    time.sleep(I2C_SLEEP)
 
-def turn_letoh_off():
-    with I2C_STATE_FILE('r') as fp:
-        state = fp.read().strip()
-    if state != 'disabled':
-        logger.info('LeTOH off')
-        with I2C_STATE_FILE() as fp:
-            fp.write('0')
-            fp.flush()
-        time.sleep(I2C_SLEEP)
-
-
-class Driver(list):
-    def __init__(self, address):
-        self.address = address
-        super(Driver, self).__init__()
-        turn_letoh_on()
-        with I2C_FILE() as fp:
-            fcntl.ioctl(fp, I2C_SLAVE, self.address)
+    with I2C_FILE() as fp:
+        for driver in drivers or ():
+            fcntl.ioctl(fp, I2C_SLAVE, driver)
 
             # 0x00 Mode register 1, MODE1
             # 0x20 Register autoincrement enable, normal mode
@@ -78,10 +66,28 @@ class Driver(list):
             fp.flush()
             time.sleep(I2C_SLEEP)
 
+
+def disable():
+    with I2C_STATE_FILE('r') as fp:
+        state = fp.read().strip()
+    if state == 'disabled':
+        return
+
+    logger.info('LeTOH off')
+    with I2C_STATE_FILE() as fp:
+        fp.write('0')
+        fp.flush()
+    time.sleep(I2C_SLEEP)
+
+
+class Driver(list):
+    def __init__(self, address):
+        self.address = address
+        super(Driver, self).__init__()
+
     def __call__(self):
-        leds = sorted(self, key=operator.attrgetter('pin'))
-        data = [0x06] + functools.reduce(operator.add, map(list, leds))
-        turn_letoh_on()
+        leds = sorted(self, key=attrgetter('pin'))
+        data = [0x06] + reduce(add, map(list, leds))
         with I2C_FILE() as fp:
             fcntl.ioctl(fp, I2C_SLAVE, self.address)
             fp.write(bytearray(data))
@@ -90,7 +96,7 @@ class Driver(list):
 
 
 class LED(object):
-    def __init__(self, driver, pin, color, value=100):
+    def __init__(self, driver, pin, color, value=0):
         self.pin = pin
         self.offset = {
             'red': 2047,
@@ -186,26 +192,44 @@ class LeTOH(dict):
                 LED(right, 14, 'blue')
             ),
         })
-        self.drivers = {
-            'left': left,
-            'right': right
-        }
+        self.drivers = [left, right]
+
+    def __bool__(self):
+        return any(
+            reduce(add, ((led.red.value, led.green.value, led.blue.value)
+                         for led in self.values()))
+        )
+
+    def __call__(self):
+        if self:
+            enable(map(attrgetter('address'), self.drivers))
+            deque(map(methodcaller('__call__'), self.drivers), 0)
+        else:
+            disable()
+
+    def set_color(self, red=None, green=None, blue=None,
+                  name=None, update=True):
+        if None not in (red, green, blue):
+            if name in self:
+                # Update named led
+                self[name](red, green, blue)
+            else:
+                # Update all leds
+                for led in self.values():
+                    led(red, green, blue)
+        if update:
+            self()
 
     def __del__(self):
-        turn_letoh_off()
-
-    def set_color(self, red, green, blue):
-        for led in self.values():
-            led(red, green, blue)
-        tuple(map(operator.methodcaller('__call__'), self.drivers.values()))
-        return True
+        disable()
 
 # Singleton app
 _letoh = LeTOH()
 
 # Method aliases
 set_color = _letoh.set_color
-cleanup = _letoh.__del__
+turn_on = _letoh.__call__
+turn_off = disable
 
 
 # Dummy

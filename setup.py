@@ -12,7 +12,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'main.py=letoh:__main__'
+            'app.py=letoh:__main__'
         ]
     }
 )

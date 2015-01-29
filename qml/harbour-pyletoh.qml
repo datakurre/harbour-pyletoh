@@ -3,20 +3,23 @@ import Sailfish.Silica 1.0
 import io.thp.pyotherside 1.0
 import org.nemomobile.dbus 2.0
 
+import "covers"
 import "pages"
 
 
 ApplicationWindow {
+  id: app
+  cover: Qt.resolvedUrl('covers/CoverPage.qml')
   initialPage: Component { MainPage { } }
   Python {
     id: python
     Component.onCompleted: {
       addImportPath(Qt.resolvedUrl('.').substr('file://'.length));
-      importModule_sync('main');
+      importModule_sync('app');  // set sys.path to include packaged libs
+      importModule_sync('letoh');
     }
     Component.onDestruction: {
-     python.call('main.letoh.cleanup', [], function(args) {
-     });
+      python.call('letoh.turn_off');
     }
   }
   DBusAdaptor {
@@ -26,12 +29,7 @@ ApplicationWindow {
 
     function rcNotify(app_name, replaces_id, app_icon, summary,
                       body, actions, hints, expire_timeout) {
-       python.call(
-         'main.letoh.set_color',
-         [256, 100, 100],
-         function(args) {
-           // callback
-       });
+       python.call('letoh.turn_on');
     }
   }
   DBusInterface {
@@ -43,12 +41,7 @@ ApplicationWindow {
     signalsEnabled: true
 
     function notificationClosed(id, reason) {
-       python.call(
-         'main.letoh.set_color',
-         [0, 0, 0],
-         function(args) {
-           // callback
-       });
+       python.call('letoh.turn_off');
     }
   }
   DBusInterface {

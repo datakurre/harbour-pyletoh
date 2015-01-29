@@ -4,8 +4,8 @@ This project uses a weird buildout based build approach to make it possible
 to easily include and package 3rd party Python packages when required.
 
 
-Building for development
-------------------------
+Development
+-----------
 
 .. code:: bash
 
@@ -14,12 +14,17 @@ Building for development
    $ sailfish-qml harbour-pyletoh
 
 
-Packaging a release from a tag
-------------------------------
+Releases
+--------
 
-.. code:: bash
+`Built at Nemo OBS`__.
 
-   $ cd ~/rpmbuild/SOURCES
-   $ curl -L -o harbour-pyletoh-0.1.0.tar.gz https://github.com/datakurre/harbour-pyletoh/archive/0.1.0.tar.gz
-   $ tar xzvf harbour-pyletoh-0.1.0.tar.gz
-   $ rpmbuild -bb harbour-pyletoh-0.1.0/rpm/harbour-pyletoh.spec
+__ https://build.merproject.org/package/show/home:datakurre/harbour-pyletoh
+
+`Distributed by Open Repos`__
+
+__ https://openrepos.net/content/datakurre/harbour-pyletoh
+
+
+
+

@@ -29,10 +29,8 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-          python.call('main.letoh.set_color',
-                      [red.value | 0, green.value | 0, blue.value | 0],
-                      function(args) {
-          });
+          python.call('letoh.set_color',
+                      [red.value | 0, green.value | 0, blue.value | 0]);
         }
       }
 
@@ -45,10 +43,8 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-          python.call('main.letoh.set_color',
-                      [red.value | 0, green.value | 0, blue.value | 0],
-                      function(args) {
-          });
+          python.call('letoh.set_color',
+                      [red.value | 0, green.value | 0, blue.value | 0]);
         }
       }
 
@@ -61,10 +57,8 @@ Page {
         maximumValue: 256
         value: 0
         onValueChanged: {
-          python.call('main.letoh.set_color',
-                      [red.value | 0, green.value | 0, blue.value | 0],
-                      function(args) {
-          });
+          python.call('letoh.set_color',
+                      [red.value | 0, green.value | 0, blue.value | 0]);
         }
       }
 
@@ -78,3 +72,4 @@ Page {
     }
   }
 }
+
