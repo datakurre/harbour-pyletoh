@@ -35,7 +35,7 @@ def load():
 
 def save(config):
     if not os.path.exists(APP_CONFIG_DIR):
-        logger.info('Creating {0:s}'.format(APP_CONFIG_PATH))
+        logger.info('Creating {0:s}'.format(APP_CONFIG_DIR))
         os.makedirs(APP_CONFIG_DIR)
 
     with open(APP_CONFIG_PATH, 'w') as fp:
