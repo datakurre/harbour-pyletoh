@@ -165,56 +165,57 @@ class RGB(object):
 class LeTOH(dict):
     def __init__(self):
         drivers = [Driver(LETOH_LEFT), Driver(LETOH_RIGHT)]
+        red, green, blue = to_rgb(config.load().get('default', 'color'))
         super(LeTOH, self).__init__({
             'bottomleft': RGB(
-                LED(drivers[0], 1, 'red'),
-                LED(drivers[0], 0, 'green'),
-                LED(drivers[0], 2, 'blue'),
+                LED(drivers[0], 1, 'red', red),
+                LED(drivers[0], 0, 'green', green),
+                LED(drivers[0], 2, 'blue', blue),
             ),
             'lowerleft': RGB(
-                LED(drivers[0], 4, 'red'),
-                LED(drivers[0], 3, 'green'),
-                LED(drivers[0], 5, 'blue'),
+                LED(drivers[0], 4, 'red', red),
+                LED(drivers[0], 3, 'green', green),
+                LED(drivers[0], 5, 'blue', blue),
             ),
             'middleleft': RGB(
-                LED(drivers[0], 7, 'red'),
-                LED(drivers[0], 6, 'green'),
-                LED(drivers[0], 8, 'blue'),
+                LED(drivers[0], 7, 'red', red),
+                LED(drivers[0], 6, 'green', green),
+                LED(drivers[0], 8, 'blue', blue),
             ),
             'upperleft': RGB(
-                LED(drivers[0], 10, 'red'),
-                LED(drivers[0], 9, 'green'),
-                LED(drivers[0], 11, 'blue'),
+                LED(drivers[0], 10, 'red', red),
+                LED(drivers[0], 9, 'green', green),
+                LED(drivers[0], 11, 'blue', blue),
             ),
             'topleft': RGB(
-                LED(drivers[0], 13, 'red'),
-                LED(drivers[0], 12, 'green'),
-                LED(drivers[0], 14, 'blue'),
+                LED(drivers[0], 13, 'red', red),
+                LED(drivers[0], 12, 'green', green),
+                LED(drivers[0], 14, 'blue', blue),
             ),
             'topright': RGB(
-                LED(drivers[1], 1, 'red'),
-                LED(drivers[1], 0, 'green'),
-                LED(drivers[1], 2, 'blue'),
+                LED(drivers[1], 1, 'red', red),
+                LED(drivers[1], 0, 'green', green),
+                LED(drivers[1], 2, 'blue', blue),
             ),
             'upperright': RGB(
-                LED(drivers[1], 4, 'red'),
-                LED(drivers[1], 3, 'green'),
-                LED(drivers[1], 5, 'blue'),
+                LED(drivers[1], 4, 'red', red),
+                LED(drivers[1], 3, 'green', green),
+                LED(drivers[1], 5, 'blue', blue),
             ),
             'middleright': RGB(
-                LED(drivers[1], 7, 'red'),
-                LED(drivers[1], 6, 'green'),
-                LED(drivers[1], 8, 'blue'),
+                LED(drivers[1], 7, 'red', red),
+                LED(drivers[1], 6, 'green', green),
+                LED(drivers[1], 8, 'blue', blue),
             ),
             'lowerright': RGB(
-                LED(drivers[1], 10, 'red'),
-                LED(drivers[1], 9, 'green'),
-                LED(drivers[1], 11, 'blue'),
+                LED(drivers[1], 10, 'red', red),
+                LED(drivers[1], 9, 'green', green),
+                LED(drivers[1], 11, 'blue', blue),
             ),
             'bottomright': RGB(
-                LED(drivers[1], 13, 'red'),
-                LED(drivers[1], 12, 'green'),
-                LED(drivers[1], 14, 'blue'),
+                LED(drivers[1], 13, 'red', red),
+                LED(drivers[1], 12, 'green', green),
+                LED(drivers[1], 14, 'blue', blue),
             ),
         })
         self.drivers = drivers

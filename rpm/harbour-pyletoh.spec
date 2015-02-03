@@ -3,7 +3,7 @@
 
 Summary: LeTOH controller app
 Name: harbour-pyletoh
-Version: 0.3.4
+Version: 0.3.5
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -23,7 +23,7 @@ BuildRequires: python3-base
 PyLeTOH controls Light emitting The Other Half
 
 %changelog
-* Tue Feb 3 2015 Asko Soukka <asko.soukka@iki.fi> - 0.3.4-1
+* Tue Feb 3 2015 Asko Soukka <asko.soukka@iki.fi> - 0.3.5-1
 - Refactor to use background daemons instead of QML d-bus bindings
 - Add to save selected color
 * Thu Jan 29 2015 Asko Soukka <asko.soukka@iki.fi> - 0.2.1-1
