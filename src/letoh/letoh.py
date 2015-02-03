@@ -1,23 +1,29 @@
 # -*- coding: utf-8 -*-
-try:
-    import pydevd
-    pydevd.settrace('localhost', port=50000, stdoutToServer=True, stderrToServer=True)  # noqa
-except ImportError:
-    pass
-
 import time
-import logging
 import fcntl
-import pyotherside
-
 from collections import deque
 from operator import add
 from operator import attrgetter
 from operator import methodcaller
 from functools import reduce
 
-logger = logging.getLogger('harbour-myletoh')
-logging.basicConfig(level=logging.DEBUG)
+import dbus
+import dbus.service
+from letoh import logger
+from letoh import config
+from letoh.utils import to_rgb
+from letoh.utils import from_rgb
+
+try:
+    import pyotherside
+    HAS_PYOTHERSIDE = True
+except ImportError:
+    HAS_PYOTHERSIDE = False
+
+
+DBUS_SERVICE = 'harbour.pyletoh'
+DBUS_INTERFACE = 'harbour.pyletoh'
+DBUS_PATH = '/harbour/pyletoh'
 
 I2C_SLAVE = 0x0703
 
@@ -66,14 +72,22 @@ def enable(drivers=None):
             fp.flush()
             time.sleep(I2C_SLEEP)
 
-    pyotherside.send('set_state', True)
+    # Signal state change
+    session_bus = dbus.SessionBus()
+    try:
+        ob = session_bus.get_object(DBUS_SERVICE, DBUS_PATH)
+        service = dbus.Interface(ob, DBUS_INTERFACE)
+        service.EmitStateChanged('enabled')
+    except dbus.exceptions.DBusException:
+        if HAS_PYOTHERSIDE:
+            pyotherside.send('stateChanged', 'enabled')
 
 
 def disable():
     with I2C_STATE_FILE('r') as fp:
         state = fp.read().strip()
     if state == 'disabled':
-        return
+        return False
 
     logger.info('LeTOH off')
     with I2C_STATE_FILE() as fp:
@@ -81,7 +95,15 @@ def disable():
         fp.flush()
     time.sleep(I2C_SLEEP)
 
-    pyotherside.send('set_state', False)
+    # Signal state change
+    session_bus = dbus.SessionBus()
+    try:
+        ob = session_bus.get_object(DBUS_SERVICE, DBUS_PATH)
+        service = dbus.Interface(ob, DBUS_INTERFACE)
+        service.EmitStateChanged('disabled')
+    except dbus.exceptions.DBusException:
+        if HAS_PYOTHERSIDE:
+            pyotherside.send('stateChanged', 'disabled')
 
 
 class Driver(list):
@@ -147,52 +169,52 @@ class LeTOH(dict):
             'bottomleft': RGB(
                 LED(drivers[0], 1, 'red'),
                 LED(drivers[0], 0, 'green'),
-                LED(drivers[0], 2, 'blue')
+                LED(drivers[0], 2, 'blue'),
             ),
             'lowerleft': RGB(
                 LED(drivers[0], 4, 'red'),
                 LED(drivers[0], 3, 'green'),
-                LED(drivers[0], 5, 'blue')
+                LED(drivers[0], 5, 'blue'),
             ),
             'middleleft': RGB(
                 LED(drivers[0], 7, 'red'),
                 LED(drivers[0], 6, 'green'),
-                LED(drivers[0], 8, 'blue')
+                LED(drivers[0], 8, 'blue'),
             ),
             'upperleft': RGB(
                 LED(drivers[0], 10, 'red'),
                 LED(drivers[0], 9, 'green'),
-                LED(drivers[0], 11, 'blue')
+                LED(drivers[0], 11, 'blue'),
             ),
             'topleft': RGB(
                 LED(drivers[0], 13, 'red'),
                 LED(drivers[0], 12, 'green'),
-                LED(drivers[0], 14, 'blue')
+                LED(drivers[0], 14, 'blue'),
             ),
-            'topight': RGB(
+            'topright': RGB(
                 LED(drivers[1], 1, 'red'),
                 LED(drivers[1], 0, 'green'),
-                LED(drivers[1], 2, 'blue')
+                LED(drivers[1], 2, 'blue'),
             ),
             'upperright': RGB(
                 LED(drivers[1], 4, 'red'),
                 LED(drivers[1], 3, 'green'),
-                LED(drivers[1], 5, 'blue')
+                LED(drivers[1], 5, 'blue'),
             ),
             'middleright': RGB(
                 LED(drivers[1], 7, 'red'),
                 LED(drivers[1], 6, 'green'),
-                LED(drivers[1], 8, 'blue')
+                LED(drivers[1], 8, 'blue'),
             ),
             'lowerright': RGB(
                 LED(drivers[1], 10, 'red'),
                 LED(drivers[1], 9, 'green'),
-                LED(drivers[1], 11, 'blue')
+                LED(drivers[1], 11, 'blue'),
             ),
             'bottomright': RGB(
                 LED(drivers[1], 13, 'red'),
                 LED(drivers[1], 12, 'green'),
-                LED(drivers[1], 14, 'blue')
+                LED(drivers[1], 14, 'blue'),
             ),
         })
         self.drivers = drivers
@@ -203,38 +225,58 @@ class LeTOH(dict):
                          for led in self.values()))
         )
 
-    def __call__(self):
-        if self:
-            enable(map(attrgetter('address'), self.drivers))
-            deque(map(methodcaller('__call__'), self.drivers), 0)
-        else:
-            disable()
+    def __call__(self, color=None):
+        if isinstance(color, str):
+            red, green, blue = to_rgb(color)
+            for led in self.values():
+                led(red, green, blue)
+        elif isinstance(color, list) or isinstance(color, tuple):
+            red, green, blue = tuple(color[:3])
+            for led in self.values():
+                led(red, green, blue)
+        elif isinstance(color, dict):
+            for name, value in color.items():
+                if name not in self:
+                    continue
+                if isinstance(value, str):
+                    self[name](*to_rgb(value))
+                elif isinstance(value, list) or isinstance(value, tuple):
+                    self[name](*tuple(value[:3]))
 
-    def set_color(self, red=None, green=None, blue=None,
-                  name=None, update=True):
-        if None not in (red, green, blue):
-            if name in self:
-                # Update named led
-                self[name](red, green, blue)
+        try:
+            if color is False or not self:
+                disable()
             else:
-                # Update all leds
-                for led in self.values():
-                    led(red, green, blue)
-        if update:
-            self()
+                enable(map(attrgetter('address'), self.drivers))
+                deque(map(methodcaller('__call__'), self.drivers), 0)
+        except Exception as e:
+            logger.error(str(e))
 
-    def __del__(self):
-        disable()
-
-# Singleton app
-_letoh = LeTOH()
-
-# Method aliases
-set_color = _letoh.set_color
-turn_on = _letoh.__call__
-turn_off = disable
+    def save(self, color=None):
+        self(color)
+        settings = config.load()
+        for name, value in self.items():
+            settings.set('default', 'color', from_rgb(
+                value.red.value, value.green.value, value.blue.value))
+        config.save(settings)
 
 
-# Dummy
-def __main__():
-    pass
+class Service(dbus.service.Object):
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='s', out_signature='')
+    def EmitStateChanged(self, value):
+        self.StateChanged(value)
+
+    @dbus.service.signal(dbus_interface=DBUS_INTERFACE,
+                         signature='s')
+    def StateChanged(self, value):
+        pass
+
+
+services = {}
+
+
+def get_service(service_bus, object_path):
+    if object_path not in services:
+        services[object_path] = Service(service_bus, object_path)
+    return services[object_path]

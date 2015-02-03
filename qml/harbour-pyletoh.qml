@@ -12,54 +12,28 @@ ApplicationWindow {
   cover: Qt.resolvedUrl('covers/CoverPage.qml')
   initialPage: Component { MainPage { } }
 
-  property bool state: false
+  property string state: 'disabled'
+  function setState(value) { app.state = value; }
 
   Python {
     id: python
     Component.onCompleted: {
       addImportPath(Qt.resolvedUrl('.').substr('file://'.length));
-      importModule_sync('app');  // set sys.path to include packaged libs
+      importModule_sync('setup');  // update sys.path to include dependencies
       importModule_sync('letoh');
-      setHandler('set_state', function(state) {
-         app.state = state;
-      });
+      setHandler('stateChanged', app.setState);
     }
     Component.onDestruction: {
-      python.call('letoh.turn_off');
-    }
-  }
-  DBusAdaptor {
-    id: interceptor
-    iface: 'org.freedesktop.Notifications'
-    path: '/org/freedesktop/Notifications'
-
-    function rcNotify(app_name, replaces_id, app_icon, summary,
-                      body, actions, hints, expire_timeout) {
-       python.call('letoh.turn_on');
+      python.call('letoh.update', [false]);
     }
   }
   DBusInterface {
-    id: notifications
-    service: 'org.freedesktop.Notifications'
-    iface: 'org.freedesktop.Notifications'
-    path: '/org/freedesktop/Notifications'
+    service: 'harbour.pyletoh'
+    iface: 'harbour.pyletoh'
+    path: '/harbour/pyletoh'
 
     signalsEnabled: true
 
-    function notificationClosed(id, reason) {
-       python.call('letoh.turn_off');
-    }
-  }
-  DBusInterface {
-    id: dbus
-    service: 'org.freedesktop.DBus'
-    path: '/org/freedesktop/DBus'
-    iface: 'org.freedesktop.DBus'
-  }
-
-  Component.onCompleted: {
-    dbus.call(
-        'AddMatch',
-        "interface='org.freedesktop.Notifications',member='Notify',type='method_call',eavesdrop='true'");
+    function stateChanged(value) { app.setState(value); }
   }
 }

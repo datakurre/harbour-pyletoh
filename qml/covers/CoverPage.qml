@@ -9,20 +9,20 @@ CoverBackground {
     text: "pyLeTOH"
   }
   CoverActionList {
-    enabled: !app.state
+    enabled: app.state === 'disabled'
     CoverAction {
       iconSource: "image://theme/icon-cover-play"
       onTriggered: {
-        python.call('letoh.turn_on');
+        python.call('letoh.update');
       }
     }
   }
   CoverActionList {
-    enabled: app.state
+    enabled: app.state === 'enabled'
     CoverAction {
       iconSource: "image://theme/icon-cover-pause"
       onTriggered: {
-        python.call('letoh.turn_off');
+        python.call('letoh.update', [false]);
       }
     }
   }

@@ -7,4 +7,4 @@ develop-eggs
 *.pyc
 *.egg
 qml/buildout
-qml/app.py
+qml/*.py
