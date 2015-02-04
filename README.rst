@@ -1,4 +1,4 @@
-Python LeTOH-app experiment
+Python LeTOH controller experiment
 
 This project uses a weird buildout based build approach to make it possible
 to easily include and package 3rd party Python packages when required.
@@ -17,7 +17,7 @@ Development
 Releases
 --------
 
-`Built at Nemo OBS`__.
+`Built at Nemo OBS`__
 
 __ https://build.merproject.org/package/show/home:datakurre/harbour-pyletoh
 
