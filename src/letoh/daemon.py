@@ -38,6 +38,20 @@ def handle_notification_closed(id_, reason):
 
 
 # noinspection PyUnusedLocal
+def handle_sig_call_state_ind(state, emergency_state):
+    if state == 'ringing':
+        try:
+            LeTOH().__call__()
+        except Exception as e:
+            logger.error(str(e))
+    else:
+        try:
+            LeTOH().__call__(False)
+        except Exception as e:
+            logger.error(str(e))
+
+
+# noinspection PyUnusedLocal
 def daemon():
     DBusGMainLoop(set_as_default=True)
     bus = dbus.SessionBus()
@@ -49,6 +63,7 @@ def daemon():
 
 def eavesdropper():
     DBusGMainLoop(set_as_default=True)
+    system_bus = dbus.SystemBus()
     session_bus = dbus.SessionBus()
 
     match_string = ("interface='org.freedesktop.Notifications',"
@@ -57,11 +72,16 @@ def eavesdropper():
     session_bus.add_message_filter(handle_notification)
     session_bus.add_signal_receiver(
         handle_notification_closed,
-        dbus_interface="org.freedesktop.Notifications",
-        signal_name="NotificationClosed"
+        signal_name='NotificationClosed',
+        dbus_interface='org.freedesktop.Notifications'
+    )
+
+    system_bus.add_signal_receiver(
+        handle_sig_call_state_ind,
+        signal_name='sig_call_state_ind',
+        dbus_interface='com.nokia.mce.signal',
+        path='/com/nokia/mce/signal'
     )
 
     mainloop = MainLoop()
     mainloop.run()
-
-
