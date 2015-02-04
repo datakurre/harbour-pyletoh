@@ -1,9 +1,9 @@
 # Prevent brp-python-bytecompile from running
 %define __os_install_post %{___build_post}
 
-Summary: LeTOH controller app
+Summary: Simple LeTOH controller
 Name: harbour-pyletoh
-Version: 0.4.0
+Version: 0.4.1
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -20,9 +20,11 @@ BuildRequires: systemd
 BuildRequires: python3-base
 
 %description
-PyLeTOH controls Light emitting The Other Half
+pyLeTOH is a simple controller for the Light emitting The Other Half
 
 %changelog
+* Wed Feb 4 2015 Asko Soukka <asko.soukka@iki.fi> - 0.4.1-1
+- Add UI for turning notification background daemons on and off
 * Tue Feb 3 2015 Asko Soukka <asko.soukka@iki.fi> - 0.4.0-1
 - Refactor to use background daemons instead of QML d-bus bindings
 - Add to save selected color
