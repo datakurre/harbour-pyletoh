@@ -3,11 +3,22 @@ import Sailfish.Silica 1.0
 
 CoverBackground {
   id: cover
-  Label {
-    id: label
+
+  Column {
     anchors.centerIn: parent
-    text: "pyLeTOH"
+
+    Image {
+      anchors.horizontalCenter: parent.horizontalCenter
+      source: 'image://theme/harbour-pyletoh'
+    }
+
+    Label {
+      anchors.horizontalCenter: parent.horizontalCenter
+      text: 'pyLeTOH'
+      font.pixelSize: 20
+    }
   }
+
   CoverActionList {
     enabled: app.state === 'disabled'
     CoverAction {
@@ -17,6 +28,7 @@ CoverBackground {
       }
     }
   }
+
   CoverActionList {
     enabled: app.state === 'enabled'
     CoverAction {
