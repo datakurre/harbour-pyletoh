@@ -17,7 +17,49 @@ Page {
       spacing: Theme.paddingLarge
 
       PageHeader {
-        title: "LeTOH"
+        title: "pyLeTOH"
+      }
+
+      TextSwitch {
+        id: notifications
+        text: 'Turn the lights on by notifications'
+        anchors.horizontalCenter: parent.horizontalCenter
+        description: ''
+
+        function update() {
+          var value = notifications.checked;
+          if (daemon.running && eavesdropper.running) {
+            notifications.description = 'Background services are currently running';
+            if (!value) { notifications.checked = true; }
+          } else {
+            notifications.description = 'Background services are currently stopped';
+            if (value) { notifications.checked = false; }
+          }
+        }
+
+        onCheckedChanged: {
+          var value = notifications.checked;
+          if (value && (!daemon.running || !eavesdropper.running)) {
+            daemon.start(function() {
+              eavesdropper.start(notifications.update);
+            });
+          }
+          if (!value && (daemon.running || eavesdropper.running)) {
+            eavesdropper.stop(function() {
+              daemon.stop(notifications.update);
+            });
+          }
+        }
+      }
+
+      ColorPicker {
+        colors: ['red', 'blue', 'yellow']
+        onColorChanged: {
+          red.value = color.r;
+          green.value = color.g;
+          blue.value = color.b;
+          saved.enabled = true;
+        }
       }
 
       Slider {
@@ -73,16 +115,8 @@ Page {
           saved.enabled = false;
         }
       }
-
-      ColorPicker {
-        onColorChanged: {
-          red.value = color.r;
-          green.value = color.g;
-          blue.value = color.b;
-          saved.enabled = true;
-        }
-      }
     }
+
     PullDownMenu {
       MenuItem {
         enabled: app.state === 'disabled'
@@ -99,12 +133,17 @@ Page {
         }
       }
     }
+
     Component.onCompleted: {
+      notifications.update();
+
       python.call('letoh.option', ['default', 'color'], function(value) {
         var color = Qt.lighter(value, 1);
+
         red.value = color.r;
         green.value = color.g;
         blue.value = color.b;
+
         if (color.r || color.g || color.b) {
           app.setState('enabled');
           saved.enabled = false;
