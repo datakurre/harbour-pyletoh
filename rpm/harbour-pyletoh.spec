@@ -3,7 +3,7 @@
 
 Summary: Simple LeTOH controller
 Name: harbour-pyletoh
-Version: 0.4.1
+Version: 0.5.0
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -23,20 +23,22 @@ BuildRequires: python3-base
 pyLeTOH is a simple controller for the Light emitting The Other Half
 
 %changelog
+* Wed Feb 4 2015 Asko Soukka <asko.soukka@iki.fi> - 0.5.0-1
+- Feature: Turn lights on by incoming calls (similarly to notifications)
 * Wed Feb 4 2015 Asko Soukka <asko.soukka@iki.fi> - 0.4.1-1
-- Add UI for turning notification background daemons on and off
+- Fix: UI for toggling notification background daemons on / off
 * Tue Feb 3 2015 Asko Soukka <asko.soukka@iki.fi> - 0.4.0-1
-- Refactor to use background daemons instead of QML d-bus bindings
-- Add to save selected color
+- Feature: Save selected color
+- Fix: Use python background daemons instead of QML d-bus bindings
 * Thu Jan 29 2015 Asko Soukka <asko.soukka@iki.fi> - 0.2.1-1
-- Add pulley menu for turning LeTOH on / off
-- Fix issue where cover state was not sync with LeTOH state
+- Feature: Pulley menu for turning LeTOH on / off
+- Fix: Cover state to sync correctly with LeTOH state
 * Thu Jan 29 2015 Asko Soukka <asko.soukka@iki.fi> - 0.2.0-1
-- Add a cover action (turn leds on / off)
-- Turn leds on by notifications
-- Turn leds off when closing notifications
+- Feature: Cover action for toggling lights on / off)
+- Feature: Turn lights on by notifications
+- Feature: Turn lights off when closing notifications
 * Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.18-1
-- Clean up build
+- Fix: OBS based build
 * Tue Jan 27 2015 Asko Soukka <asko.soukka@iki.fi> - 0.1.11-1
 - First release
 
