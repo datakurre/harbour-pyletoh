@@ -1,5 +1,5 @@
 [Unit]
-Description=harbour-pyletoh daemon
+Description=harbour-pyletoh eavesdropper
 Requires=dbus.socket
 After=pre-user-session.target lipstick.service dbus.socket
 
