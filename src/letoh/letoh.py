@@ -38,7 +38,7 @@ LETOH_RIGHT = 0x40
 LETOH_LEFT = 0x41
 
 
-def enable(drivers=None):
+def enable(drivers=None, service=None):
     with I2C_STATE_FILE('r') as fp:
         state = fp.read().strip()
     if state == 'enabled':
@@ -73,17 +73,19 @@ def enable(drivers=None):
             time.sleep(I2C_SLEEP)
 
     # Signal state change
-    session_bus = dbus.SessionBus()
-    try:
-        ob = session_bus.get_object(DBUS_SERVICE, DBUS_PATH)
-        service = dbus.Interface(ob, DBUS_INTERFACE)
-        service.EmitStateChanged('enabled')
-    except dbus.exceptions.DBusException:
-        if HAS_PYOTHERSIDE:
+    if service:
+        service.StateChanged('enabled')
+    elif HAS_PYOTHERSIDE:
+        session_bus = dbus.SessionBus()
+        try:
+            ob = session_bus.get_object(DBUS_SERVICE, DBUS_PATH)
+            service = dbus.Interface(ob, DBUS_INTERFACE)
+            service.EmitStateChanged('enabled')
+        except dbus.exceptions.DBusException:
             pyotherside.send('stateChanged', 'enabled')
 
 
-def disable():
+def disable(service):
     with I2C_STATE_FILE('r') as fp:
         state = fp.read().strip()
     if state == 'disabled':
@@ -96,13 +98,15 @@ def disable():
     time.sleep(I2C_SLEEP)
 
     # Signal state change
-    session_bus = dbus.SessionBus()
-    try:
-        ob = session_bus.get_object(DBUS_SERVICE, DBUS_PATH)
-        service = dbus.Interface(ob, DBUS_INTERFACE)
-        service.EmitStateChanged('disabled')
-    except dbus.exceptions.DBusException:
-        if HAS_PYOTHERSIDE:
+    if service:
+        service.StateChanged('disabled')
+    elif HAS_PYOTHERSIDE:
+        session_bus = dbus.SessionBus()
+        try:
+            ob = session_bus.get_object(DBUS_SERVICE, DBUS_PATH)
+            service = dbus.Interface(ob, DBUS_INTERFACE)
+            service.EmitStateChanged('disabled')
+        except dbus.exceptions.DBusException:
             pyotherside.send('stateChanged', 'disabled')
 
 
@@ -226,7 +230,7 @@ class LeTOH(dict):
                          for led in self.values()))
         )
 
-    def __call__(self, color=None):
+    def __call__(self, color=None, service=None):
         if isinstance(color, str):
             red, green, blue = to_rgb(color)
             for led in self.values():
@@ -246,9 +250,9 @@ class LeTOH(dict):
 
         try:
             if color is False or not self:
-                disable()
+                disable(service)
             else:
-                enable(map(attrgetter('address'), self.drivers))
+                enable(map(attrgetter('address'), self.drivers), service)
                 deque(map(methodcaller('__call__'), self.drivers), 0)
         except Exception as e:
             logger.error(str(e))
@@ -262,7 +266,42 @@ class LeTOH(dict):
         config.save(settings)
 
 
+def action_to_color(action):
+    if action and action.startswith('#'):
+        return action
+    return config.load().get('default', 'color')
+
+
 class Service(dbus.service.Object):
+    def __init__(self, bus, object_path):
+        dbus.service.Object.__init__(self, bus, object_path)
+        self.letoh = LeTOH()
+
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='s', out_signature='')
+    def Enable(self, action=None):
+        color = action_to_color(action)
+        try:
+            self.letoh(color=color, service=self)
+        except Exception as e:
+            logger.error(str(e))
+
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='', out_signature='')
+    def Disable(self):
+        try:
+            self.letoh(False, service=self)
+        except Exception as e:
+            logger.error(str(e))
+
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='s', out_signature='')
+    def Save(self, color=None):
+        try:
+            self.letoh.save(color)
+        except Exception as e:
+            logger.error(str(e))
+
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='s', out_signature='')
     def EmitStateChanged(self, value):
@@ -272,12 +311,3 @@ class Service(dbus.service.Object):
                          signature='s')
     def StateChanged(self, value):
         pass
-
-
-services = {}
-
-
-def get_service(service_bus, object_path):
-    if object_path not in services:
-        services[object_path] = Service(service_bus, object_path)
-    return services[object_path]

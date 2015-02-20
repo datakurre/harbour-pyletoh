@@ -13,8 +13,8 @@ setup(
     entry_points={
         'console_scripts': [
             'setup.py=letoh:__main__',
-            'daemon.py=letoh.daemon:daemon',
-            'eavesdropper.py=letoh.daemon:eavesdropper',
+            'service.py=letoh.daemons:letoh_service',
+            'eavesdropper.py=letoh.daemons:letoh_eavesdropper',
         ]
     }
 )

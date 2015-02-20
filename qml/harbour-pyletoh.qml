@@ -26,22 +26,32 @@ ApplicationWindow {
     }
 
     Component.onDestruction: {
-      python.call('letoh.update', [false]);
+      letoh.action('Disable');
     }
   }
 
   DBusInterface {
+    id: letoh
+
     iface: 'harbour.pyletoh'
     path: '/harbour/pyletoh'
     service: 'harbour.pyletoh'
 
     signalsEnabled: true
 
+    function action(name, args) {
+      if (service.running) {
+        letoh.call(name, args !== undefined ? args : []);
+      } else {
+        python.call('letoh.' + name, args !== undefined ? args : []);
+      }
+    }
+
     function stateChanged(value) { app.setState(value); }
   }
 
   DBusInterface {
-    id: daemon
+    id: service
 
     iface: 'org.freedesktop.systemd1.Unit'
     path: '/org/freedesktop/systemd1/unit/harbour_2dpyletoh_2eservice'
@@ -50,27 +60,27 @@ ApplicationWindow {
     property bool running: false
 
     function isRunning() {
-      return daemon.getProperty('SubState') === 'running';
+      return service.getProperty('SubState') === 'running';
     }
 
     function start(callback) {
       var args = [{'type': 's', 'value': 'replace'}];
-      return daemon.typedCall('Start', args, function(result) {
-        daemon.running = daemon.isRunning();
+      return service.typedCall('Start', args, function(result) {
+        service.running = service.isRunning();
         if (callback) { callback(); }
       });
     }
 
     function stop(callback) {
       var args = [{'type': 's', 'value': 'replace'}];
-      return daemon.typedCall('Stop', args, function(result) {
-        daemon.running = daemon.isRunning();
+      return service.typedCall('Stop', args, function(result) {
+        service.running = service.isRunning();
         if (callback) { callback(); }
       });
     }
 
     Component.onCompleted: {
-      daemon.running = daemon.isRunning()
+      service.running = service.isRunning()
     }
   }
 

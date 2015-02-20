@@ -1,10 +1,10 @@
 [Unit]
-Description=harbour-pyletoh daemon
+Description=harbour-pyletoh service
 Requires=dbus.socket
 After=pre-user-session.target lipstick.service dbus.socket
 
 [Service]
-ExecStart=/usr/bin/python3 /usr/share/harbour-pyletoh/qml/daemon.py
+ExecStart=/usr/bin/python3 /usr/share/harbour-pyletoh/qml/service.py
 Restart=always
 
 [Install]
