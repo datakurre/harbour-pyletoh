@@ -5,7 +5,6 @@ import dbus.service
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.overrides.GObject import MainLoop
 
-from threading import Thread
 from contextlib import contextmanager
 
 from letoh import logger
