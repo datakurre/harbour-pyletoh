@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 import time
+import math
 import fcntl
 from collections import deque
 from operator import add
 from operator import attrgetter
 from operator import methodcaller
 from functools import reduce
+
+from threading import Thread
+from pytweening import easeInOutCubic
 
 import dbus
 import dbus.service
@@ -256,8 +260,8 @@ class LeTOH(dict):
         except Exception as e:
             logger.error(str(e))
 
-    def save(self, color=None):
-        self(color)
+    def save(self, color=None, service=None):
+        self(color, service)
         settings = config.load()
         for name, value in self.items():
             settings.set('default', 'color', from_rgb(
@@ -265,14 +269,41 @@ class LeTOH(dict):
         config.save(settings)
 
 
+class BreathWorker(Thread):
+    alive = True
+
+    def __init__(self, color, seconds, callback):
+        super(BreathWorker, self).__init__()
+        self.red, self.green, self.blue = to_rgb(color)
+        self.seconds = seconds
+        self.callback = callback
+        self.start()
+
+    def run(self):
+        while self.alive:
+            x = ((math.fabs(time.time() % self.seconds * 2 - self.seconds))
+                 / self.seconds)
+            factor = easeInOutCubic(x)
+            self.callback(from_rgb(max(self.red * factor, 1),
+                                   max(self.green * factor, 1),
+                                   max(self.blue * factor, 1)))
+            time.sleep(1 / 30.)  # fps
+
+    def stop(self):
+        self.alive = False
+
+
 class Service(dbus.service.Object):
     def __init__(self, bus, object_path):
         dbus.service.Object.__init__(self, bus, object_path)
         self.letoh = LeTOH()
+        self.worker = None
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='s', out_signature='')
     def Enable(self, color=None):
+        if self.worker:
+            self.worker.stop()
         if not color or not color.startswith('#'):
             color = config.load().get('default', 'color')
         try:
@@ -283,6 +314,8 @@ class Service(dbus.service.Object):
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='', out_signature='')
     def Disable(self):
+        if self.worker:
+            self.worker.stop()
         try:
             disable(self)
         except Exception as e:
@@ -292,6 +325,8 @@ class Service(dbus.service.Object):
                          in_signature='s', out_signature='')
     def Start(self, action):
         color = config.load().get('default', 'color')
+        callback = lambda x: self.letoh(color=x, service=self)
+        self.worker = BreathWorker(color, 4, callback)
         try:
             self.letoh(color=color, service=self)
         except Exception as e:
@@ -300,6 +335,8 @@ class Service(dbus.service.Object):
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='', out_signature='')
     def Stop(self):
+        if self.worker:
+            self.worker.stop()
         try:
             disable(self)
         except Exception as e:
@@ -309,7 +346,7 @@ class Service(dbus.service.Object):
                          in_signature='s', out_signature='')
     def Save(self, color=None):
         try:
-            self.letoh.save(color)
+            self.letoh.save(color, service=self)
         except Exception as e:
             logger.error(str(e))
 
