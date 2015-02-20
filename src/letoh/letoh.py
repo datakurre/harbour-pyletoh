@@ -290,6 +290,23 @@ class Service(dbus.service.Object):
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='s', out_signature='')
+    def Start(self, action):
+        color = config.load().get('default', 'color')
+        try:
+            self.letoh(color=color, service=self)
+        except Exception as e:
+            logger.error(str(e))
+
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='', out_signature='')
+    def Stop(self):
+        try:
+            disable(self)
+        except Exception as e:
+            logger.error(str(e))
+
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='s', out_signature='')
     def Save(self, color=None):
         try:
             self.letoh.save(color)

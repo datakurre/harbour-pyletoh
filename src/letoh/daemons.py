@@ -39,7 +39,7 @@ def handle_notification(bus, msg):
             msg.get_member() == 'Notify']):
         app_name = msg.get_args_list()[0]
         with dbus_service() as service:
-            service.Enable(app_name)
+            service.Start(app_name)
     else:
         return True
 
@@ -47,17 +47,17 @@ def handle_notification(bus, msg):
 # noinspection PyUnusedLocal
 def handle_notification_closed(id_, reason):
     with dbus_service() as service:
-        service.Disable()
+        service.Stop()
 
 
 # noinspection PyUnusedLocal
 def handle_sig_call_state_ind(state, emergency_state):
     if state == 'ringing':
         with dbus_service() as service:
-            service.Enable('ringing')
+            service.Start('ringing')
     else:
         with dbus_service() as service:
-            service.Disable()
+            service.Stop()
 
 
 # noinspection PyUnusedLocal
