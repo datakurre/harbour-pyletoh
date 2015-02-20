@@ -85,7 +85,7 @@ def enable(drivers=None, service=None):
             pyotherside.send('stateChanged', 'enabled')
 
 
-def disable(service):
+def disable(service=None):
     with I2C_STATE_FILE('r') as fp:
         state = fp.read().strip()
     if state == 'disabled':
@@ -247,13 +247,12 @@ class LeTOH(dict):
                     self[name](*to_rgb(value))
                 elif isinstance(value, list) or isinstance(value, tuple):
                     self[name](*tuple(value[:3]))
-
         try:
-            if color is False or not self:
-                disable(service)
-            else:
+            if self:
                 enable(map(attrgetter('address'), self.drivers), service)
                 deque(map(methodcaller('__call__'), self.drivers), 0)
+            else:
+                disable(service)
         except Exception as e:
             logger.error(str(e))
 
@@ -266,12 +265,6 @@ class LeTOH(dict):
         config.save(settings)
 
 
-def action_to_color(action):
-    if action and action.startswith('#'):
-        return action
-    return config.load().get('default', 'color')
-
-
 class Service(dbus.service.Object):
     def __init__(self, bus, object_path):
         dbus.service.Object.__init__(self, bus, object_path)
@@ -279,8 +272,9 @@ class Service(dbus.service.Object):
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='s', out_signature='')
-    def Enable(self, action=None):
-        color = action_to_color(action)
+    def Enable(self, color=None):
+        if not color or not color.startswith('#'):
+            color = config.load().get('default', 'color')
         try:
             self.letoh(color=color, service=self)
         except Exception as e:
@@ -290,7 +284,7 @@ class Service(dbus.service.Object):
                          in_signature='', out_signature='')
     def Disable(self):
         try:
-            self.letoh(False, service=self)
+            disable(self)
         except Exception as e:
             logger.error(str(e))
 
