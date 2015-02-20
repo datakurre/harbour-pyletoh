@@ -28,7 +28,7 @@ Page {
 
         function update() {
           var value = notifications.checked;
-          if (daemon.running && eavesdropper.running) {
+          if (service.running && eavesdropper.running) {
             notifications.description = 'Background services are currently running';
             if (!value) { notifications.checked = true; }
           } else {
@@ -39,14 +39,14 @@ Page {
 
         onCheckedChanged: {
           var value = notifications.checked;
-          if (value && (!daemon.running || !eavesdropper.running)) {
-            daemon.start(function() {
+          if (value && (!service.running || !eavesdropper.running)) {
+            service.start(function() {
               eavesdropper.start(notifications.update);
             });
           }
-          if (!value && (daemon.running || eavesdropper.running)) {
+          if (!value && (service.running || eavesdropper.running)) {
             eavesdropper.stop(function() {
-              daemon.stop(notifications.update);
+              service.stop(notifications.update);
             });
           }
         }
@@ -55,9 +55,12 @@ Page {
       ColorPicker {
         colors: ['red', 'blue', 'yellow']
         onColorChanged: {
-          red.value = color.r;
-          green.value = color.g;
-          blue.value = color.b;
+          if (color.r) { red.value = color.r; }
+          if (color.g) { green.value = color.g; }
+          if (color.b) { blue.value = color.b; }
+          if (!color.r) { red.value = color.r; }
+          if (!color.g) { green.value = color.g; }
+          if (!color.b) { blue.value = color.b; }
           saved.enabled = true;
         }
       }
@@ -71,7 +74,7 @@ Page {
         value: 0
         onValueChanged: {
           var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          python.call('letoh.update', [color.toString()]);
+          letoh.action('Enable', [color.toString()]);
           saved.enabled = true;
         }
       }
@@ -85,7 +88,7 @@ Page {
         value: 0
         onValueChanged: {
           var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          python.call('letoh.update', [color.toString()]);
+          letoh.action('Enable', [color.toString()]);
           saved.enabled = true;
         }
       }
@@ -99,7 +102,7 @@ Page {
         value: 0
         onValueChanged: {
           var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          python.call('letoh.update', [color.toString()]);
+          letoh.action('Enable', [color.toString()]);
           saved.enabled = true;
         }
       }
@@ -111,7 +114,7 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
         onClicked: {
           var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          python.call('letoh.save', [color.toString()]);
+          letoh.action('Save', [color.toString()]);
           saved.enabled = false;
         }
       }
@@ -122,14 +125,14 @@ Page {
         enabled: app.state === 'disabled'
         text: 'On'
         onClicked: {
-          python.call('letoh.update');
+          letoh.action('Enable');
         }
       }
       MenuItem {
         enabled: app.state === 'enabled'
         text: 'Off'
         onClicked: {
-          python.call('letoh.update', [false]);
+          letoh.action('Disable');
         }
       }
     }

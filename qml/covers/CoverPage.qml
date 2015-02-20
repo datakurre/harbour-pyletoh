@@ -24,7 +24,7 @@ CoverBackground {
     CoverAction {
       iconSource: "image://theme/icon-cover-play"
       onTriggered: {
-        python.call('letoh.update');
+        letoh.action('Enable');
       }
     }
   }
@@ -34,7 +34,7 @@ CoverBackground {
     CoverAction {
       iconSource: "image://theme/icon-cover-pause"
       onTriggered: {
-        python.call('letoh.update', [false]);
+        letoh.action('Disable');
       }
     }
   }

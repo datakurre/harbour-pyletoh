@@ -13,8 +13,10 @@ from letoh.letoh import DBUS_PATH
 from letoh import config
 
 # QML API
-update = LeTOH()
-save = update.save
+Enable = LeTOH()
+Disable = lambda: Enable(False)
+Save = Enable.save
+
 option = lambda section, key, default='': config.load().get(section, key, fallback=default)  # noqa
 
 __all__ = ['logger', 'update', 'option', '__main__',
