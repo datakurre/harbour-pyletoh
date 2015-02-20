@@ -9,6 +9,7 @@ setup(
     packages=find_packages('src', exclude=['ez_setup']),
     package_dir={'': 'src'},
     install_requires=[
+        'PyTweening'
     ],
     entry_points={
         'console_scripts': [
