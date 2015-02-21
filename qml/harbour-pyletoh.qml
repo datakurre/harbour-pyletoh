@@ -13,7 +13,18 @@ ApplicationWindow {
   initialPage: Component { MainPage { } }
 
   property string state: 'disabled'
+  property string color: '#000000'
+  property string animation: ''
+
   function setState(value) { app.state = value; }
+
+  onColorChanged: {
+    letoh.action('Enable', [app.color, app.animation]);
+  }
+
+  onAnimationChanged: {
+    letoh.action('Enable', [app.color, app.animation]);
+  }
 
   Python {
     id: python

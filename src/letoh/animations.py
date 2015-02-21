@@ -1,30 +1,40 @@
 # -*- coding: utf-8 -*-
 import math
-from threading import Thread
+import threading
 import time
 
+from letoh import logger
 from letoh.utils import to_rgb
 from letoh.utils import from_rgb
 import pytweening
 
 
-class Mock(object):
-    def stop(self):
-        pass
-
-    def __bool__(self):
-        return False
-
-
-class Animation(Thread):
+class Animation(threading.Thread):
     alive = True
 
-    def __init__(self, color, millis, callback):
+    red = 0
+    green = 0
+    blue = 0
+
+    duration = 1.0
+
+    def __init__(self, color, callback):
         super(Animation, self).__init__()
-        self.red, self.green, self.blue = to_rgb(color)
-        self.seconds = millis / 1000.
+        self.color = color
         self.callback = callback
         self.start()
+
+    @property
+    def name(self):
+        return self.__class__.__name__.lower()
+
+    @property
+    def color(self):
+        return from_rgb(self.red, self.green, self.blue)
+
+    @color.setter
+    def color(self, color):
+        self.red, self.green, self.blue = to_rgb(color)
 
     def stop(self):
         self.alive = False
@@ -33,11 +43,13 @@ class Animation(Thread):
         return self.alive
 
 
-class Breathing(Animation):
+class Breath(Animation):
+    duration = 4.0
+
     def run(self):
         while self.alive:
-            x = ((math.fabs(time.time() % self.seconds * 2 - self.seconds))
-                 / self.seconds)
+            x = ((math.fabs(time.time() % self.duration * 2 - self.duration))
+                 / self.duration)
             factor = pytweening.easeInOutCubic(x)
             self.callback(from_rgb(self.red * factor,
                                    self.green * factor,
@@ -45,7 +57,17 @@ class Breathing(Animation):
             time.sleep(1 / 30.)  # fps
 
 
-class Rider(Animation):
+class BreathSlow(Breath):
+    duration = 8.0
+
+
+class BreathFast(Breath):
+    duration = 2.0
+
+
+class Swipe(Animation):
+    duration = 3.5
+
     def run(self):
         groups = [
             ['bottomleft', 'bottomright'],
@@ -55,8 +77,8 @@ class Rider(Animation):
             ['topleft', 'topright'],
         ]
         while self.alive:
-            x = ((math.fabs(time.time() % self.seconds * 2 - self.seconds))
-                 / self.seconds)
+            x = ((math.fabs(time.time() % self.duration * 2 - self.duration))
+                 / self.duration)
             factor = math.floor(pytweening.linear(x) * 13) - 5
 
             colors = {}
@@ -86,3 +108,11 @@ class Rider(Animation):
                         colors[led] = from_rgb(0, 0, 0)
             self.callback(colors)
             time.sleep(1 / 30.)  # fps
+
+
+class SwipeSlow(Swipe):
+    duration = 5.0
+
+
+class SwipeFast(Swipe):
+    duration = 2.0

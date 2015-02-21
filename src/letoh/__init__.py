@@ -16,9 +16,10 @@ from letoh import config
 # QML API
 Enable = LeTOH()
 Disable = disable
-Save = Enable.save
-
-option = lambda section, key, default='': config.load().get(section, key, fallback=default)  # noqa
+Save = lambda color, animation: config.save_defaults(color=color,
+                                                     animation=animation)
+option = lambda section, key, default='': config.load().get(section, key,
+                                                            fallback=default)
 
 __all__ = ['logger', 'update', 'option', '__main__',
            'LeTOH', 'Service',
