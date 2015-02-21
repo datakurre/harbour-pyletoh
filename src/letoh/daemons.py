@@ -2,10 +2,9 @@
 import os
 import dbus
 import dbus.service
+import contextlib
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.overrides.GObject import MainLoop
-
-from contextlib import contextmanager
 
 from letoh import logger
 from letoh import LeTOH
@@ -18,7 +17,7 @@ os.environ['DBUS_SESSION_BUS_ADDRESS'] = 'unix:path=/run/user/100000/dbus/user_b
 os.environ['DISPLAY'] = ':0'
 
 
-@contextmanager
+@contextlib.contextmanager
 def dbus_service():
     session_bus = dbus.SessionBus()
     try:
@@ -38,7 +37,7 @@ def handle_notification(bus, msg):
             msg.get_member() == 'Notify']):
         app_name = msg.get_args_list()[0]
         with dbus_service() as service:
-            service.Start(app_name)
+            service.Notify(app_name)
     else:
         return True
 
@@ -46,17 +45,17 @@ def handle_notification(bus, msg):
 # noinspection PyUnusedLocal
 def handle_notification_closed(id_, reason):
     with dbus_service() as service:
-        service.Stop()
+        service.Disable()
 
 
 # noinspection PyUnusedLocal
 def handle_sig_call_state_ind(state, emergency_state):
     if state == 'ringing':
         with dbus_service() as service:
-            service.Start('ringing')
+            service.Notify('call')
     else:
         with dbus_service() as service:
-            service.Stop()
+            service.Disable()
 
 
 # noinspection PyUnusedLocal

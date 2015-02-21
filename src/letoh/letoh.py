@@ -38,6 +38,15 @@ I2C_SLEEP = 0.001
 LETOH_RIGHT = 0x40
 LETOH_LEFT = 0x41
 
+ANIMATIONS = {
+    'breath': animations.Breath,
+    'breath-slow': animations.BreathSlow,
+    'breath-fast': animations.BreathFast,
+    'swipe': animations.Swipe,
+    'swipe-slow': animations.SwipeSlow,
+    'swipe-fast': animations.SwipeFast
+}
+
 
 def enable(drivers=None, service=None):
     with I2C_STATE_FILE('r') as fp:
@@ -170,7 +179,7 @@ class RGB(object):
 class LeTOH(dict):
     def __init__(self):
         drivers = [Driver(LETOH_LEFT), Driver(LETOH_RIGHT)]
-        red, green, blue = to_rgb(config.load().get('default', 'color'))
+        red, green, blue = to_rgb(config.load().get('DEFAULT', 'color'))
         super(LeTOH, self).__init__({
             'bottomleft': RGB(
                 LED(drivers[0], 1, 'red', red),
@@ -231,7 +240,8 @@ class LeTOH(dict):
                          for led in self.values()))
         )
 
-    def __call__(self, color=None, service=None):
+    # noinspection PyUnusedLocal
+    def __call__(self, color=None, animation=None, service=None):
         if isinstance(color, str):
             red, green, blue = to_rgb(color)
             for led in self.values():
@@ -249,7 +259,7 @@ class LeTOH(dict):
                 elif isinstance(value, list) or isinstance(value, tuple):
                     self[name](*tuple(value[:3]))
         try:
-            if self:
+            if self or animation is True:
                 enable(map(attrgetter('address'), self.drivers), service)
                 deque(map(methodcaller('__call__'), self.drivers), 0)
             else:
@@ -257,69 +267,101 @@ class LeTOH(dict):
         except Exception as e:
             logger.error(str(e))
 
-    def save(self, color=None, service=None):
-        self(color, service)
-        settings = config.load()
-        for name, value in self.items():
-            settings.set('default', 'color', from_rgb(
-                value.red.value, value.green.value, value.blue.value))
-        config.save(settings)
-
 
 class Service(dbus.service.Object):
     def __init__(self, bus, object_path):
         dbus.service.Object.__init__(self, bus, object_path)
         self.letoh = LeTOH()
-        self.animation = animations.Mock()
+        self.animation = None
+
+    def update(self, color):
+        try:
+            self.letoh(color=color, animation=True, service=self)
+        except Exception as e:
+            logger.error(str(e))
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
-                         in_signature='s', out_signature='')
-    def Enable(self, color=None):
-        self.animation.stop()
-
+                         in_signature='ss', out_signature='')
+    def Enable(self, color=None, animation=None):
+        # Get color
         if not color or not color.startswith('#'):
-            color = config.load().get('default', 'color')
+            if self.animation is None:
+                color = config.load().get('DEFAULT', 'color',
+                                          fallback='#ff0000')
+            else:
+                color = self.animation.color
+
+        # Handle the simple case
+        if self.animation is None:
+            if animation in ANIMATIONS:
+                self.animation = ANIMATIONS[animation](color, self.update)
+            else:
+                try:
+                    self.letoh(color=color, service=self)
+                except Exception as e:
+                    logger.error(str(e))
+            return
+
+        # Stop on-going wrong animation
+        if animation is not None and animation != self.animation.name:
+            self.animation.stop()
+            self.animation = None
+
+        # Enable explicitly given animation
+        if animation in ANIMATIONS and not self.animation:
+            self.animation = ANIMATIONS[animation](color, self.update)
+            return
+
+        # Update on-going animation
+        if self.animation:
+            self.animation.color = color
+            return
+
+        # Re-start stopped animation
+        if self.animation is not None:
+            self.animation = self.animation.__class__(color, self.update)
+            return
+
+        # No animation
         try:
             self.letoh(color=color, service=self)
         except Exception as e:
             logger.error(str(e))
 
+    # noinspection PyUnusedLocal
+    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
+                         in_signature='s', out_signature='')
+    def Notify(self, app_name):
+        if self.animation is not None:
+            self.animation.stop()
+            self.animation = None
+
+        settings = config.load()
+
+        if not settings.has_section(app_name):
+            settings.add_section(app_name)
+            config.save(settings)
+
+        color = settings.get(app_name, 'color', fallback='#ff0000')
+        animation = settings.get(app_name, 'animation', fallback=None)
+
+        self.Enable(color, animation)
+
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='', out_signature='')
     def Disable(self):
-        self.animation.stop()
-
+        if self.animation is not None:
+            self.animation.stop()
+            self.animation = None
         try:
             disable(self)
         except Exception as e:
             logger.error(str(e))
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
-                         in_signature='s', out_signature='')
-    def Start(self, action):
-        color = config.load().get('default', 'color')
-        callback = lambda x: self.letoh(color=x, service=self)
-
-        self.animation.stop()
-        self.animation = animations.Rider(color, 3500, callback)
-
-    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
-                         in_signature='', out_signature='')
-    def Stop(self):
-        self.animation.stop()
-
-        try:
-            disable(self)
-        except Exception as e:
-            logger.error(str(e))
-
-    @dbus.service.method(dbus_interface=DBUS_INTERFACE,
-                         in_signature='s', out_signature='')
-    def Save(self, color=None):
-        try:
-            self.letoh.save(color, service=self)
-        except Exception as e:
-            logger.error(str(e))
+                         in_signature='ss', out_signature='')
+    def Save(self, color=None, animation=None):
+        config.save_defaults(color=color, animation=animation)
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='s', out_signature='')

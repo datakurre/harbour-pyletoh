@@ -14,7 +14,7 @@ Page {
       id: column
 
       width: page.width
-      spacing: Theme.paddingLarge
+      spacing: Theme.paddingMedium
 
       PageHeader {
         title: "pyLeTOH"
@@ -73,8 +73,7 @@ Page {
         maximumValue: 1
         value: 0
         onValueChanged: {
-          var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          letoh.action('Enable', [color.toString()]);
+          app.color = Qt.rgba(red.value, green.value, blue.value, 1).toString();
           saved.enabled = true;
         }
       }
@@ -87,8 +86,7 @@ Page {
         maximumValue: 1
         value: 0
         onValueChanged: {
-          var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          letoh.action('Enable', [color.toString()]);
+          app.color = Qt.rgba(red.value, green.value, blue.value, 1).toString();
           saved.enabled = true;
         }
       }
@@ -101,21 +99,34 @@ Page {
         maximumValue: 1
         value: 0
         onValueChanged: {
-          var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          letoh.action('Enable', [color.toString()]);
+          app.color = Qt.rgba(red.value, green.value, blue.value, 1).toString();
           saved.enabled = true;
         }
       }
 
-      Button {
-        id: saved
-        text: 'save'
-        enabled: false
-        anchors.horizontalCenter: parent.horizontalCenter
-        onClicked: {
-          var color = Qt.rgba(red.value, green.value, blue.value, 1);
-          letoh.action('Save', [color.toString()]);
-          saved.enabled = false;
+      Slider {
+        id: animation
+        label: 'no animation'
+        width: parent.width
+        minimumValue: 0
+        maximumValue: 6
+        stepSize: 1
+        value: 0
+
+        property variant options: {
+          0: {'name': '', label: 'no animation'},
+          1: {'name': 'breath-slow', label: 'breath (slow)'},
+          2: {'name': 'breath', label: 'breath'},
+          3: {'name': 'breath-fast', label: 'breath (fast)'},
+          4: {'name': 'swipe-slow', label: 'swipe (slow)'},
+          5: {'name': 'swipe', label: 'swipe'},
+          6: {'name': 'swipe-fast', label: 'swipe (fast)'}
+        }
+
+        onValueChanged: {
+          animation.label = animation.options[animation.value].label;
+          app.animation = animation.options[animation.value].name;
+          saved.enabled = true;
         }
       }
     }
@@ -125,7 +136,7 @@ Page {
         enabled: app.state === 'disabled'
         text: 'On'
         onClicked: {
-          letoh.action('Enable');
+          letoh.action('Enable', [app.color, app.animation]);
         }
       }
       MenuItem {
@@ -137,22 +148,42 @@ Page {
       }
     }
 
+    PushUpMenu {
+      enabled: saved.enabled
+      MenuItem {
+        id: saved
+        text: 'save'
+        enabled: false
+        anchors.horizontalCenter: parent.horizontalCenter
+        onClicked: {
+          letoh.action('Save', [app.color, app.animation]);
+          saved.enabled = false;
+        }
+      }
+    }
+
     Component.onCompleted: {
       notifications.update();
 
-      python.call('letoh.option', ['default', 'color'], function(value) {
-        var color = Qt.lighter(value, 1);
+      python.call('letoh.option', ['DEFAULT', 'color'], function(value) {
+        python.call('letoh.option', ['DEFAULT', 'animation'], function(name) {
+          var index, color = Qt.lighter(value, 1);
 
-        red.value = color.r;
-        green.value = color.g;
-        blue.value = color.b;
+          for(index in animation.options) {
+            if (animation.options[index].name === name) {
+              animation.value = index;
+            }
+          }
 
-        if (color.r || color.g || color.b) {
-          app.setState('enabled');
+          red.value = color.r;
+          green.value = color.g;
+          blue.value = color.b;
+
+          if (color.r || color.g || color.b) { app.setState('enabled'); }
+
           saved.enabled = false;
-        }
+        });
       });
     }
   }
 }
-

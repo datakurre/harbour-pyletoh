@@ -24,7 +24,7 @@ CoverBackground {
     CoverAction {
       iconSource: "image://theme/icon-cover-play"
       onTriggered: {
-        letoh.action('Enable');
+        letoh.action('Enable', [app.color, app.animation]);
       }
     }
   }
