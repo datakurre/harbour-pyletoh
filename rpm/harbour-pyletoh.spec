@@ -78,27 +78,19 @@ mkdir -p $TARGET
 cp -rpv *.service $TARGET/
 
 %preun
-if [ $1 -eq 0 ]; then
-  su nemo -c "systemctl --user stop %{name}"
-  su nemo -c "systemctl --user stop %{name}-eavesdropper"
-  su nemo -c "systemctl --user --no-reload disable %{name}"
-  su nemo -c "systemctl --user --no-reload disable %{name}-eavesdropper"
-fi
+su nemo -c "systemctl --user stop %{name}"
+su nemo -c "systemctl --user stop %{name}-eavesdropper"
+su nemo -c "systemctl --user --no-reload disable %{name}"
+su nemo -c "systemctl --user --no-reload disable %{name}-eavesdropper"
 
 %post
-if [ $1 -eq 1 ]; then
-  su nemo -c "systemctl --user --no-reload enable %{name}"
-  su nemo -c "systemctl --user --no-reload enable %{name}-eavesdropper"
-  su nemo -c "systemctl --user start %{name}"
-  su nemo -c "systemctl --user start %{name}-eavesdropper"
-fi
+su nemo -c "systemctl --user --no-reload enable %{name}"
+su nemo -c "systemctl --user --no-reload enable %{name}-eavesdropper"
+su nemo -c "systemctl --user start %{name}"
+su nemo -c "systemctl --user start %{name}-eavesdropper"
 su nemo -c "systemctl --user daemon-reload"
 
 %postun
-if [ $1 -ge 1 ]; then
-  su nemo -c "systemctl --user try-restart %{name}"
-  su nemo -c "systemctl --user try-resatrt %{name}-eavesdropper"
-fi
 su nemo -c "systemctl --user daemon-reload"
 
 %files
