@@ -30,6 +30,11 @@ def load():
 
     config = configparser.ConfigParser()
     config.read(APP_CONFIG_PATH)
+
+    # Patch to support downgrading from >= 0.6.0
+    if not config.has_section('default'):
+        config['default'] = {'color': '#FF0000'}
+
     return config
 
 
