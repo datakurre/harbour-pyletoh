@@ -14,7 +14,7 @@ from letoh.letoh import DBUS_PATH
 from letoh import config
 
 # QML API
-Enable = LeTOH()
+Enable = lambda color, animation: LeTOH()(color=color, animation=animation)
 Disable = disable
 Save = lambda color, animation: config.save_defaults(color=color,
                                                      animation=animation)

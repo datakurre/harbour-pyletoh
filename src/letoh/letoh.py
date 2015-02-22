@@ -266,7 +266,7 @@ class LeTOH(dict):
                 enable(map(attrgetter('address'), self.drivers), service)
                 deque(map(methodcaller('__call__'), self.drivers), 0)
             else:
-                disable(service)
+                disable(service=service)
         except Exception as e:
             logger.error(str(e))
 
@@ -357,7 +357,7 @@ class Service(dbus.service.Object):
             self.animation.stop()
             self.animation = None
         try:
-            disable(self)
+            disable(service=self)
         except Exception as e:
             logger.error(str(e))
 
