@@ -7,8 +7,8 @@ to easily include and package 3rd party Python packages when required.
 In-device development
 ---------------------
 
-It's most convenient to develop pyLeTOH with a real Jolla-device with the
-LeTOH other half.
+It's most convenient to develop pyLeTOH with a real Jolla-device with a LeTOH
+other half.
 
 1. Install the packaged app_ to get everything configured for free.
 
@@ -32,7 +32,7 @@ Hacking with the library
 ------------------------
 
 pyLeTOH can also be used as a pure pythoh library for custom hacking with
-the LeTOH.
+your LeTOH.
 
 1. Create a python virtualenv with system packages enabled and this
    the library installed
@@ -54,13 +54,13 @@ the LeTOH.
       # Instantiate
       myletoh = LeTOH()
 
-      # Set all leds or the same color
+      # Set color for all leds
       myletoh('#FF0000')
 
-      # Set named leds for a particular color
+      # Set color for named leds (top, upper, middle, lower, bottom)
       myletoh({'topleft': '#0000FF'})
 
-      # Shutdown all the leds
+      # Shutdown all leds
       myletoh('#000000')
 
 
