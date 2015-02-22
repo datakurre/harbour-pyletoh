@@ -109,7 +109,7 @@ Page {
         label: 'no animation'
         width: parent.width
         minimumValue: 0
-        maximumValue: 6
+        maximumValue: 9
         stepSize: 1
         value: 0
 
@@ -120,7 +120,10 @@ Page {
           3: {'name': 'breath-fast', label: 'breath (fast)'},
           4: {'name': 'swipe-slow', label: 'swipe (slow)'},
           5: {'name': 'swipe', label: 'swipe'},
-          6: {'name': 'swipe-fast', label: 'swipe (fast)'}
+          6: {'name': 'swipe-fast', label: 'swipe (fast)'},
+          7: {'name': 'around-slow', label: 'around (slow)'},
+          8: {'name': 'around', label: 'around'},
+          9: {'name': 'around-fast', label: 'around (fast)'}
         }
 
         onValueChanged: {
