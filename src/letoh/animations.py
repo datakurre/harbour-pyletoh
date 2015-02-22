@@ -83,36 +83,62 @@ class Swipe(Animation):
 
             colors = {}
             for i in range(len(groups)):
-                if i == factor:
-                    for led in groups[i]:
-                        colors[led] = from_rgb(self.red,
-                                               self.green,
-                                               self.blue)
-                elif abs(i - factor) == 1:
-                    for led in groups[i]:
-                        colors[led] = from_rgb(self.red * 0.5,
-                                               self.green * 0.5,
-                                               self.blue * 0.5)
-                elif abs(i - factor) == 2:
-                    for led in groups[i]:
-                        colors[led] = from_rgb(self.red * 0.25,
-                                               self.green * 0.25,
-                                               self.blue * 0.25)
-                elif abs(i - factor) == 3:
-                    for led in groups[i]:
-                        colors[led] = from_rgb(self.red * 0.05,
-                                               self.green * 0.05,
-                                               self.blue * 0.05)
-                else:
-                    for led in groups[i]:
-                        colors[led] = from_rgb(0, 0, 0)
+                distance = pytweening.easeInCubic(
+                    max(0, (4 - abs(i - factor))) / 4.)
+                for led in groups[i]:
+                    colors[led] = from_rgb(self.red * distance,
+                                           self.green * distance,
+                                           self.blue * distance)
             self.callback(colors)
             time.sleep(1 / 30.)  # fps
 
 
 class SwipeSlow(Swipe):
-    duration = 5.0
+    duration = 4.5
 
 
 class SwipeFast(Swipe):
     duration = 2.0
+
+
+class Around(Animation):
+    duration = 1.5
+
+    def run(self):
+        leds = [
+            'topright',
+            'upperright',
+            'middleright',
+            'lowerright',
+            'bottomright',
+            'bottomleft',
+            'lowerleft',
+            'middleleft',
+            'upperleft',
+            'topleft'
+        ]
+
+        while self.alive:
+            x = (time.time() % self.duration) / self.duration
+            factor = math.floor(pytweening.linear(x) * 10)
+
+            colors = {}
+            for i in range(len(leds)):
+                distance = pytweening.easeInExpo(max(
+                    max(0, (4 - abs(i - factor)) / 4.),
+                    max(0, (4 - abs((i + 9) - factor)) / 4.)
+                ))
+                led = leds[i]
+                colors[led] = from_rgb(self.red * distance,
+                                       self.green * distance,
+                                       self.blue * distance)
+            self.callback(colors)
+            time.sleep(1 / 30.)  # fps
+
+
+class AroundSlow(Around):
+    duration = 2.5
+
+
+class AroundFast(Around):
+    duration = 0.75

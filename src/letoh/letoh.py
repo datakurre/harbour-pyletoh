@@ -44,7 +44,10 @@ ANIMATIONS = {
     'breath-fast': animations.BreathFast,
     'swipe': animations.Swipe,
     'swipe-slow': animations.SwipeSlow,
-    'swipe-fast': animations.SwipeFast
+    'swipe-fast': animations.SwipeFast,
+    'around-slow': animations.AroundSlow,
+    'around': animations.Around,
+    'around-fast': animations.AroundFast
 }
 
 
