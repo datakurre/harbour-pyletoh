@@ -25,10 +25,6 @@ class Animation(threading.Thread):
         self.start()
 
     @property
-    def name(self):
-        return self.__class__.__name__.lower()
-
-    @property
     def color(self):
         return from_rgb(self.red, self.green, self.blue)
 

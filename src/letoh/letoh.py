@@ -13,7 +13,6 @@ from letoh import logger
 from letoh import config
 from letoh import animations
 from letoh.utils import to_rgb
-from letoh.utils import from_rgb
 
 try:
     import pyotherside
@@ -306,7 +305,8 @@ class Service(dbus.service.Object):
             return
 
         # Stop on-going wrong animation
-        if animation is not None and animation != self.animation.name:
+        if animation is not None and not isinstance(self.animation,
+                                                    ANIMATIONS.get(animation)):
             self.animation.stop()
             self.animation = None
 
