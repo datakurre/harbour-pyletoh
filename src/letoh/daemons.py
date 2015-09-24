@@ -35,7 +35,7 @@ def dbus_service():
 def handle_notification(bus, msg):
     if all([msg.get_interface() == 'org.freedesktop.Notifications',
             msg.get_member() == 'Notify']):
-        app_name = msg.get_args_list()[0]
+        app_name = (msg.get_args_list()[0] or '').strip() or 'DEFAULT'
         with dbus_service() as service:
             service.Notify(app_name)
     else:

@@ -53,7 +53,11 @@ def load():
         init()
 
     config = configparser.ConfigParser(allow_no_value=True)
-    config.read(APP_CONFIG_PATH)
+    try:
+        config.read(APP_CONFIG_PATH)
+    except configparser.ParsingError:
+        init()
+        config = configparser.ConfigParser(allow_no_value=True)
 
     if config.has_section('default'):
         migrate(config)
