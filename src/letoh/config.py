@@ -55,7 +55,7 @@ def load():
     config = configparser.ConfigParser(allow_no_value=True)
     try:
         config.read(APP_CONFIG_PATH)
-    except configparser.ParsingError:
+    except:
         init()
         config = configparser.ConfigParser(allow_no_value=True)
 
