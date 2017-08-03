@@ -267,6 +267,7 @@ class LeTOH(dict):
             else:
                 disable(service=service)
         except Exception as e:
+            disable(service=service)
             logger.error(str(e))
 
 
@@ -280,6 +281,7 @@ class Service(dbus.service.Object):
         try:
             self.letoh(color=color, animation=True, service=self)
         except Exception as e:
+            disable(service=self)
             logger.error(str(e))
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
@@ -301,6 +303,7 @@ class Service(dbus.service.Object):
                 try:
                     self.letoh(color=color, service=self)
                 except Exception as e:
+                    disable(service=self)
                     logger.error(str(e))
             return
 
@@ -329,6 +332,7 @@ class Service(dbus.service.Object):
         try:
             self.letoh(color=color, service=self)
         except Exception as e:
+            disable(service=self)
             logger.error(str(e))
 
     # noinspection PyUnusedLocal
@@ -359,7 +363,7 @@ class Service(dbus.service.Object):
         try:
             disable(service=self)
         except Exception as e:
-            logger.error(str(e))
+            logger.exception(str(e))
 
     @dbus.service.method(dbus_interface=DBUS_INTERFACE,
                          in_signature='ss', out_signature='')
