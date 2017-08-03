@@ -3,7 +3,7 @@
 
 Summary: Simple LeTOH controller
 Name: harbour-pyletoh
-Version: 0.6.5
+Version: 0.6.6
 Release: 1
 Source: %{name}-%{version}.tar.gz
 BuildArch: noarch
@@ -23,6 +23,8 @@ BuildRequires: python3-base
 pyLeTOH is a simple controller for the Light emitting The Other Half
 
 %changelog
+* Thu Aug 4 2017 Asko Soukka <asko.soukka@iki.fi> - 0.6.6-1
+- Fix: Survive issues caused by loose LeTOH connection
 * Thu Sep 24 2015 Asko Soukka <asko.soukka@iki.fi> - 0.6.5-1
 - Fix: Reset corrupted configuration
 * Sun Feb 22 2015 Asko Soukka <asko.soukka@iki.fi> - 0.6.2-1
